@@ -1,0 +1,5 @@
+apply from: "$rootDir/gradle/common/kotlin.gradle"
+
+dependencies {
+    api project(':polymorphic-ecs')
+}

@@ -11,3 +11,23 @@ buildscript {
         classpath "org.jetbrains.kotlin:kotlin-gradle-plugin:$kotlinVersion"
     }
 }
+
+
+subprojects {
+    apply plugin: 'io.spring.dependency-management'
+
+    repositories {
+        maven {
+            url 'https://dl.bintray.com/kotlin/kotlin-eap-1.2'
+        }
+        jcenter()
+    }
+
+    dependencyManagement {
+        dependencies {
+            dependencySet(group:'org.jetbrains.kotlin', version: kotlinVersion) {
+                entry 'kotlin-stdlib-jdk8'
+            }
+        }
+    }
+}
