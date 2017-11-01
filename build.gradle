@@ -1,0 +1,13 @@
+buildscript {
+    repositories {
+        maven {
+            url 'https://dl.bintray.com/kotlin/kotlin-eap-1.2'
+        }
+        jcenter()
+    }
+
+    dependencies {
+        classpath 'io.spring.gradle:dependency-management-plugin:1.0.3.RELEASE'
+        classpath "org.jetbrains.kotlin:kotlin-gradle-plugin:$kotlinVersion"
+    }
+}
