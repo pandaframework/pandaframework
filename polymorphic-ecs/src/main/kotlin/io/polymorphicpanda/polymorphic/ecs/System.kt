@@ -5,7 +5,7 @@ abstract class System {
 
     open fun init() { }
 
-    abstract suspend fun update(elapsedTime: Double, context: SystemContext)
+    abstract suspend fun process(timeStep: Double, context: SystemContext)
 
     open fun dispose() { }
 }
