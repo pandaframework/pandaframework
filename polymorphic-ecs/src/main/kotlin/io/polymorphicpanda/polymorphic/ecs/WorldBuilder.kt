@@ -1,7 +1,5 @@
 package io.polymorphicpanda.polymorphic.ecs
 
-import io.polymorphicpanda.polymorphic.ecs.system.Dispatcher
-
 class WorldBuilder {
     private val dispatchers = mutableListOf<Dispatcher>()
 

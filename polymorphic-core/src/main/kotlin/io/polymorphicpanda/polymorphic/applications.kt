@@ -1,6 +1,6 @@
 package io.polymorphicpanda.polymorphic
 
-import io.polymorphicpanda.polymorphic.ecs.system.Dispatcher
+import io.polymorphicpanda.polymorphic.ecs.Dispatcher
 
 class Application {
     fun run() { TODO() }
