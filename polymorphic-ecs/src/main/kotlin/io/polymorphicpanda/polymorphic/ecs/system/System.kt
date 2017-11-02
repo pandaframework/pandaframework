@@ -1,15 +1,14 @@
 package io.polymorphicpanda.polymorphic.ecs.system
 
-import io.polymorphicpanda.polymorphic.ecs.entity.EntityManager
+import io.polymorphicpanda.polymorphic.ecs.entity.Aspect
+import io.polymorphicpanda.polymorphic.ecs.entity.WorldContext
 
 abstract class System {
-    internal var _entityManager: EntityManager? = null
-
-    val entityManager by lazy { _entityManager }
+    abstract val aspect: Aspect
 
     open fun init() { }
 
-    abstract fun update(elapsedTime: Double)
+    abstract suspend fun update(elapsedTime: Double, context: WorldContext)
 
     open fun dispose() { }
 }
