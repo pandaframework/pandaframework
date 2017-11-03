@@ -1,4 +1,4 @@
-package org.polymorphicpanda.polymorphic.ecs
+package io.polymorphicpanda.polymorphic.ecs
 
 import com.natpryce.hamkrest.assertion.assert
 import com.natpryce.hamkrest.assertion.assertThat
@@ -9,9 +9,6 @@ import com.nhaarman.mockito_kotlin.mock
 import com.nhaarman.mockito_kotlin.never
 import com.nhaarman.mockito_kotlin.times
 import com.nhaarman.mockito_kotlin.verify
-import io.polymorphicpanda.polymorphic.ecs.Component
-import io.polymorphicpanda.polymorphic.ecs.DirtyEntityTracker
-import io.polymorphicpanda.polymorphic.ecs.EntityStorage
 import org.jetbrains.spek.api.Spek
 import org.jetbrains.spek.api.dsl.describe
 import org.jetbrains.spek.api.dsl.it

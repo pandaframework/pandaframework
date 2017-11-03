@@ -1,10 +1,8 @@
-package org.polymorphicpanda.polymorphic.ecs
+package io.polymorphicpanda.polymorphic.ecs
 
 import com.natpryce.hamkrest.assertion.assert
 import com.natpryce.hamkrest.hasElement
 import com.natpryce.hamkrest.sameInstance
-import io.polymorphicpanda.polymorphic.ecs.Component
-import io.polymorphicpanda.polymorphic.ecs.aspects
 import org.jetbrains.spek.api.Spek
 import org.jetbrains.spek.api.dsl.describe
 import org.jetbrains.spek.api.dsl.it

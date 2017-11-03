@@ -1,15 +1,10 @@
-package org.polymorphicpanda.polymorphic.ecs
+package io.polymorphicpanda.polymorphic.ecs
 
 import com.nhaarman.mockito_kotlin.any
 import com.nhaarman.mockito_kotlin.eq
 import com.nhaarman.mockito_kotlin.mock
 import com.nhaarman.mockito_kotlin.verify
 import com.nhaarman.mockito_kotlin.whenever
-import io.polymorphicpanda.polymorphic.ecs.Component
-import io.polymorphicpanda.polymorphic.ecs.ComponentId
-import io.polymorphicpanda.polymorphic.ecs.ComponentType
-import io.polymorphicpanda.polymorphic.ecs.EntityEditor
-import io.polymorphicpanda.polymorphic.ecs.EntityReference
 import org.jetbrains.spek.api.Spek
 import org.jetbrains.spek.api.dsl.it
 import org.jetbrains.spek.api.dsl.on
