@@ -9,6 +9,7 @@ buildscript {
     dependencies {
         classpath 'io.spring.gradle:dependency-management-plugin:1.0.3.RELEASE'
         classpath "org.jetbrains.kotlin:kotlin-gradle-plugin:$kotlinVersion"
+        classpath "org.junit.platform:junit-platform-gradle-plugin:1.0.1"
     }
 }
 
@@ -35,6 +36,21 @@ subprojects {
             }
 
             dependency 'org.roaringbitmap:RoaringBitmap:0.6.51'
+
+            dependency 'com.natpryce:hamkrest:1.4.2.2'
+
+            dependencySet(group: 'org.junit.platform', version: '1.0.1') {
+                entry 'junit-platform-engine'
+                entry 'junit-platform-runner'
+                entry 'junit-platform-launcher'
+            }
+
+            dependencySet(group: 'org.jetbrains.spek', version: '1.1.5') {
+                entry 'spek-api'
+                entry 'spek-subject-extension'
+                entry 'spek-junit-platform-engine'
+            }
+
         }
     }
 }
