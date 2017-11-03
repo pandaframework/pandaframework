@@ -69,15 +69,3 @@ class WorldBuilder {
         executionLayers.add(executionLayer)
     }
 }
-
-fun main(args: Array<String>) {
-    val world = WorldBuilder()
-        .withComponents(emptyList())
-        .withAsyncExecutionLayer(emptyList())
-        .withExecutionLayer(emptyList())
-        .build()
-
-    world.init()
-    world.step(2.0)
-    world.dispose()
-}
