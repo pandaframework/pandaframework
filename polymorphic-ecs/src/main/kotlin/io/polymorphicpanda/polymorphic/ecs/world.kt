@@ -7,17 +7,23 @@ import kotlin.reflect.KClass
 
 class World internal constructor(
     private val executionLayers: List<ExecutionLayer>,
-    private val componentTypes: List<ComponentType>
+    componentTypes: List<ComponentType>
 ) {
     val worldContext: WorldContext = WorldContextImpl(componentTypes)
     inline private val worldContextImpl get() = worldContext as WorldContextImpl
 
     private var initRequired = true
 
-    fun step(timeStep: Double) {
+    fun init() {
+        executionLayers.flatMap(ExecutionLayer::systems)
+            .forEach(worldContextImpl::registerSystem)
 
+        initRequired = false
+    }
+
+    fun step(timeStep: Double) {
         if (initRequired) {
-            init()
+            throw IllegalStateException("World#init not called!")
         }
 
         for (executionLayer in executionLayers) {
@@ -29,11 +35,9 @@ class World internal constructor(
         }
     }
 
-    private fun init() {
+    fun dispose() {
         executionLayers.flatMap(ExecutionLayer::systems)
-            .forEach(worldContextImpl::registerSystem)
-
-        initRequired = false
+            .forEach { it.dispose() }
     }
 }
 
@@ -46,7 +50,7 @@ class WorldBuilder {
         return this
     }
 
-    fun withAsyncExectionLayer(systems: List<System>): WorldBuilder {
+    fun withAsyncExecutionLayer(systems: List<System>): WorldBuilder {
         addExecutionLayer(ParallelExecutionLayer(systems))
         return this
     }
@@ -64,4 +68,16 @@ class WorldBuilder {
     private fun addExecutionLayer(executionLayer: ExecutionLayer) {
         executionLayers.add(executionLayer)
     }
+}
+
+fun main(args: Array<String>) {
+    val world = WorldBuilder()
+        .withComponents(emptyList())
+        .withAsyncExecutionLayer(emptyList())
+        .withExecutionLayer(emptyList())
+        .build()
+
+    world.init()
+    world.step(2.0)
+    world.dispose()
 }
