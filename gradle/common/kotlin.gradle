@@ -21,6 +21,7 @@ dependencies {
 dependencies {
     testImplementation 'com.natpryce:hamkrest'
     testImplementation 'org.jetbrains.spek:spek-api'
+    testImplementation 'org.jetbrains.spek:spek-subject-extension'
 
     testRuntime 'org.junit.platform:junit-platform-launcher'
     testRuntime 'org.jetbrains.spek:spek-junit-platform-engine'
