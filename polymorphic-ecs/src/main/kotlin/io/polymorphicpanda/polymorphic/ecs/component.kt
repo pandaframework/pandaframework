@@ -2,7 +2,9 @@ package io.polymorphicpanda.polymorphic.ecs
 
 import kotlin.reflect.KClass
 
-interface Component
+interface Component {
+    fun detached() { }
+}
 
 typealias ComponentType = KClass<out Component>
 

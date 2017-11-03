@@ -27,7 +27,14 @@ subprojects {
         dependencies {
             dependencySet(group:'org.jetbrains.kotlin', version: kotlinVersion) {
                 entry 'kotlin-stdlib-jdk8'
+                entry 'kotlin-reflect'
             }
+
+            dependencySet(group:'org.jetbrains.kotlinx', version: '0.19.3') {
+                entry 'kotlinx-coroutines-core'
+            }
+
+            dependency 'org.roaringbitmap:RoaringBitmap:0.6.51'
         }
     }
 }

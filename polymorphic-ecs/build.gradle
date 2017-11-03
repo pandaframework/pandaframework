@@ -1,1 +1,6 @@
 apply from: "$rootDir/gradle/common/kotlin.gradle"
+
+dependencies {
+    implementation 'org.jetbrains.kotlinx:kotlinx-coroutines-core'
+    implementation 'org.roaringbitmap:RoaringBitmap'
+}
