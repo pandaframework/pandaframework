@@ -18,4 +18,5 @@ class Aspect internal constructor(internal val included: List<ComponentType>,
     }
 }
 
-fun aspects() = Aspect(emptyList(), emptyList())
+private val initial = Aspect(emptyList(), emptyList())
+fun aspects() = initial
