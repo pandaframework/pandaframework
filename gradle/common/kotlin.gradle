@@ -19,6 +19,7 @@ dependencies {
 }
 
 dependencies {
+    testImplementation 'com.nhaarman:mockito-kotlin'
     testImplementation 'com.natpryce:hamkrest'
     testImplementation 'org.jetbrains.spek:spek-api'
     testImplementation 'org.jetbrains.spek:spek-subject-extension'
