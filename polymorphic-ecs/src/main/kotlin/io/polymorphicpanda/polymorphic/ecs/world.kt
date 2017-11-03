@@ -9,14 +9,13 @@ class World internal constructor(
     private val executionLayers: List<ExecutionLayer>,
     componentTypes: List<ComponentType>
 ) {
-    val worldContext: WorldContext = WorldContextImpl(componentTypes)
-    inline private val worldContextImpl get() = worldContext as WorldContextImpl
+    val worldContext: WorldContext = WorldContext(componentTypes)
 
     private var initRequired = true
 
     fun init() {
         executionLayers.flatMap(ExecutionLayer::systems)
-            .forEach(worldContextImpl::registerSystem)
+            .forEach(worldContext::registerSystem)
 
         initRequired = false
     }
@@ -28,10 +27,10 @@ class World internal constructor(
 
         for (executionLayer in executionLayers) {
             runBlocking {
-                launch(CommonPool) { executionLayer.execute(timeStep, worldContextImpl::contextFor) }
+                launch(CommonPool) { executionLayer.execute(timeStep, worldContext::contextFor) }
             }
 
-            worldContextImpl.resolveChangeSets()
+            worldContext.resolveChangeSets()
         }
     }
 

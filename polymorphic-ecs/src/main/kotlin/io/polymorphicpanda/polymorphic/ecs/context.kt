@@ -1,5 +1,7 @@
 package io.polymorphicpanda.polymorphic.ecs
 
+import org.roaringbitmap.buffer.ImmutableRoaringBitmap
+import org.roaringbitmap.buffer.MutableRoaringBitmap
 import kotlin.reflect.KClass
 
 class ChangeSet internal constructor(private val componentTypeMap: Map<ComponentType, ComponentId>,
@@ -39,23 +41,40 @@ interface Context {
     fun changeSet(cs: ChangeSet.() -> Unit)
 }
 
-interface SystemContext: Context {
-    fun entities(): List<Entity>
-}
+class SystemContext internal constructor(
+    private val worldContext: WorldContext,
+    private val includedBitSet: ImmutableRoaringBitmap,
+    private val excludedBitSet: ImmutableRoaringBitmap
+): Context by worldContext {
+    private val trackedEntities = mutableSetOf<Entity>()
 
-interface WorldContext: Context
+    fun entities(): Set<Entity> = trackedEntities
 
-internal class SystemContextImpl(
-    private val worldContextImpl: WorldContextImpl,
-    private val entityStorage: EntityStorage
-): SystemContext, Context by worldContextImpl {
-    override fun entities(): List<Entity> {
-        TODO()
+    internal fun update(dirtyEntities: Set<EntityReference>) {
+        dirtyEntities.forEach { entityRef ->
+            if (entityRef.isValid()) {
+                val bitSet = entityRef.bitSet
+                val alreadyTracked = trackedEntities.contains(entityRef.entity)
+                val matched = bitSet.contains(includedBitSet) &&
+                    !bitSet.contains(excludedBitSet)
+
+                if (alreadyTracked && !matched) {
+                    trackedEntities.remove(entityRef.entity)
+                } else if (!alreadyTracked && matched) {
+                    trackedEntities.add(entityRef.entity)
+                }
+
+            } else {
+                // entity has been destroyed
+                trackedEntities.remove(entityRef.entity)
+            }
+        }
     }
 }
 
-internal class WorldContextImpl(componentTypes: List<ComponentType>): WorldContext {
-    private val entityStorage = EntityStorage()
+class WorldContext internal constructor(componentTypes: List<ComponentType>): Context {
+    private val dirtyEntityTracker = DirtyEntityTracker()
+    private val entityStorage = EntityStorage(dirtyEntityTracker)
     private val contextMappings = mutableMapOf<System, SystemContext>()
     private val componentTypeMap: Map<ComponentType, ComponentId>
     private val changeSets = mutableListOf<ChangeSet.() -> Unit>()
@@ -75,15 +94,31 @@ internal class WorldContextImpl(componentTypes: List<ComponentType>): WorldConte
         }
     }
 
-    fun registerSystem(system: System) {
+    internal fun registerSystem(system: System) {
         contextMappings.computeIfAbsent(system) {
-            SystemContextImpl(this, entityStorage)
+            val includedBitSet = MutableRoaringBitmap()
+            val excludedBitSet = MutableRoaringBitmap()
+            val aspect = system.aspect
+            aspect.included.map { componentTypeMap.getValue(it) }
+                .forEach { includedBitSet.add(it) }
+
+            aspect.excluded.map { componentTypeMap.getValue(it) }
+                .forEach { excludedBitSet.add(it) }
+
+            SystemContext(this, includedBitSet, excludedBitSet)
         }
     }
 
-    fun resolveChangeSets() {
+    internal fun resolveChangeSets() {
         changeSets.forEach { it(cs) }
+        val dirtyEntities = dirtyEntityTracker.dirtySet()
+        if (dirtyEntities.isNotEmpty()) {
+            contextMappings.values.forEach {
+                it.update(dirtyEntities)
+            }
+            dirtyEntityTracker.clear()
+        }
     }
 
-    fun contextFor(system: System): SystemContext = contextMappings.getValue(system)
+    internal fun contextFor(system: System): SystemContext = contextMappings.getValue(system)
 }

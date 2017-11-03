@@ -21,15 +21,30 @@ class EntityEditor internal constructor(internal val entityReference: EntityRefe
 
 internal interface EntityReference {
     val entity: Entity
-    val characteristics: ImmutableRoaringBitmap
+    val bitSet: ImmutableRoaringBitmap
     fun add(componentId: ComponentId, component: Component)
     fun <T: Component> get(componentId: ComponentId): T
-    fun contains(componentId: ComponentId) = characteristics.contains(componentId)
+    fun contains(componentId: ComponentId) = bitSet.contains(componentId)
     fun remove(componentId: ComponentId)
     fun release()
+    fun isValid(): Boolean
 }
 
-internal class EntityStorage {
+internal class DirtyEntityTracker {
+    private val dirty = mutableSetOf<EntityReference>()
+
+    fun track(entityReference: EntityReference) {
+        dirty.add(entityReference)
+    }
+
+    fun dirtySet() = dirty.toMutableSet()
+
+    fun clear() {
+        dirty.clear()
+    }
+}
+
+internal class EntityStorage(private val dirtyEntityTracker: DirtyEntityTracker) {
     private val storage = mutableMapOf<Entity, MutableMap<ComponentId, Component>>()
     private val references = mutableMapOf<Entity, EntityReference>()
 
@@ -40,10 +55,12 @@ internal class EntityStorage {
             val index = MutableRoaringBitmap()
 
             object: EntityReference {
+                private var valid = true
                 override val entity = entity
-                override val characteristics: ImmutableRoaringBitmap = index
+                override val bitSet: ImmutableRoaringBitmap = index
 
                 override fun add(componentId: ComponentId, component: Component) {
+                    markDirty()
                     components.put(componentId, component)
                     index.add(componentId)
                 }
@@ -53,15 +70,24 @@ internal class EntityStorage {
 
                 override fun remove(componentId: ComponentId) {
                     components.remove(componentId)?.let {
+                        markDirty()
                         it.detached()
                         index.remove(componentId)
                     }
                 }
 
                 override fun release() {
+                    markDirty()
                     storage.remove(entity)
                     references.remove(entity)
                     index.clear()
+                    valid = false
+                }
+
+                override fun isValid() = valid
+
+                private fun markDirty() {
+                    dirtyEntityTracker.track(this)
                 }
             }
         }
