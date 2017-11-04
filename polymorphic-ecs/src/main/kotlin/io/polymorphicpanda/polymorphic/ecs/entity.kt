@@ -37,7 +37,7 @@ internal class DirtyEntityTracker {
         dirty.add(entityReference)
     }
 
-    fun dirtySet() = dirty.toMutableSet()
+    fun dirtySet(): Set<EntityReference> = dirty
 
     fun clear() {
         dirty.clear()
