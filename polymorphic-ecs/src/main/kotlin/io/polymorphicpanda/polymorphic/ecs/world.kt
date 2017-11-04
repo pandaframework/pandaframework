@@ -6,11 +6,9 @@ import kotlinx.coroutines.experimental.runBlocking
 import kotlin.reflect.KClass
 
 class World internal constructor(
-    private val executionLayers: List<ExecutionLayer>,
-    componentTypes: List<ComponentType>
+    val worldContext: WorldContext,
+    internal val executionLayers: List<ExecutionLayer>
 ) {
-    val worldContext: WorldContext = WorldContext(componentTypes)
-
     private var initRequired = true
 
     fun init() {
@@ -59,10 +57,19 @@ class WorldBuilder {
         return this
     }
 
-    fun build(): World = World(
-        executionLayers,
-        componentTypes
-    )
+    fun build(): World {
+        val mapper = ComponentMapper()
+
+        val editScope = EditScope(
+            componentTypes.associate { it to mapper.map(it) },
+            EntityStorage(DirtyEntityTracker())
+        )
+
+        return World(
+            WorldContext(editScope),
+            executionLayers
+        )
+    }
 
     private fun addExecutionLayer(executionLayer: ExecutionLayer) {
         executionLayers.add(executionLayer)

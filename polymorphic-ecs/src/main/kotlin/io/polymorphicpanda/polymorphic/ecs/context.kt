@@ -4,8 +4,8 @@ import org.roaringbitmap.buffer.ImmutableRoaringBitmap
 import org.roaringbitmap.buffer.MutableRoaringBitmap
 import kotlin.reflect.KClass
 
-class ChangeSet internal constructor(private val componentTypeMap: Map<ComponentType, ComponentId>,
-                                              private val entityStorage: EntityStorage) {
+class EditScope internal constructor(internal val componentTypeMap: Map<ComponentType, ComponentId>,
+                                     internal val entityStorage: EntityStorage) {
     private val entityEditors = mutableMapOf<Entity, EntityEditor>()
     private val entityProvider = BasicEntityProvider()
 
@@ -38,7 +38,7 @@ class ChangeSet internal constructor(private val componentTypeMap: Map<Component
 
 interface Context {
     fun manage(entity: Entity): EntityEditor
-    fun changeSet(cs: ChangeSet.() -> Unit)
+    fun changeSet(cs: EditScope.() -> Unit)
 }
 
 class SystemContext internal constructor(
@@ -72,23 +72,15 @@ class SystemContext internal constructor(
     }
 }
 
-class WorldContext internal constructor(componentTypes: List<ComponentType>): Context {
-    private val dirtyEntityTracker = DirtyEntityTracker()
-    private val entityStorage = EntityStorage(dirtyEntityTracker)
+class WorldContext internal constructor(internal val editScope: EditScope): Context {
+    private val dirtyEntityTracker = editScope.entityStorage.dirtyEntityTracker
     private val contextMappings = mutableMapOf<System, SystemContext>()
-    private val componentTypeMap: Map<ComponentType, ComponentId>
-    private val changeSets = mutableListOf<ChangeSet.() -> Unit>()
+    private val componentTypeMap = editScope.componentTypeMap
+    private val changeSets = mutableListOf<EditScope.() -> Unit>()
 
-    init {
-        val mapper = ComponentMapper()
-        componentTypeMap = componentTypes.associate { it to mapper.map(it) }
-    }
+    override fun manage(entity: Entity) = editScope.editorFor(entity)
 
-    private val cs = ChangeSet(componentTypeMap, entityStorage)
-
-    override fun manage(entity: Entity) = cs.editorFor(entity)
-
-    override fun changeSet(cs: ChangeSet.() -> Unit) {
+    override fun changeSet(cs: EditScope.() -> Unit) {
         synchronized(changeSets) {
             changeSets.add(cs)
         }
@@ -110,7 +102,7 @@ class WorldContext internal constructor(componentTypes: List<ComponentType>): Co
     }
 
     internal fun resolveChangeSets() {
-        changeSets.forEach { it(cs) }
+        changeSets.forEach { it(editScope) }
         val dirtyEntities = dirtyEntityTracker.dirtySet()
         if (dirtyEntities.isNotEmpty()) {
             contextMappings.values.forEach {

@@ -44,7 +44,7 @@ internal class DirtyEntityTracker {
     }
 }
 
-internal class EntityStorage(private val dirtyEntityTracker: DirtyEntityTracker) {
+internal class EntityStorage(val dirtyEntityTracker: DirtyEntityTracker) {
     private val storage = mutableMapOf<Entity, MutableMap<ComponentId, Component>>()
     private val references = mutableMapOf<Entity, EntityReference>()
 
