@@ -9,6 +9,7 @@ import org.jetbrains.spek.api.Spek
 import org.jetbrains.spek.api.dsl.it
 import org.jetbrains.spek.api.dsl.on
 
+
 object SerialExecutionLayerSpec: Spek({
     val system1 by memoized { mock<System>() }
     val system2 by memoized { mock<System>() }

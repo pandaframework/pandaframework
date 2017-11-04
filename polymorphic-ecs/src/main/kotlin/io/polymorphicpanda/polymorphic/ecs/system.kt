@@ -2,6 +2,7 @@ package io.polymorphicpanda.polymorphic.ecs
 
 import kotlinx.coroutines.experimental.Job
 import kotlinx.coroutines.experimental.launch
+import kotlinx.coroutines.experimental.runBlocking
 
 abstract class System {
     abstract val aspect: Aspect
@@ -15,12 +16,11 @@ abstract class System {
 
 
 internal abstract class ExecutionLayer(val systems: List<System>) {
-    abstract suspend fun execute(timeStep: Double, systemContextProvider: (System) -> SystemContext)
+    abstract fun execute(timeStep: Double, systemContextProvider: (System) -> SystemContext)
 }
 
 internal class SerialExecutionLayer(systems: List<System>): ExecutionLayer(systems) {
-    override suspend fun execute(timeStep: Double, systemContextProvider: (System) -> SystemContext) {
-
+    override fun execute(timeStep: Double, systemContextProvider: (System) -> SystemContext) = runBlocking {
         for (system in systems) {
             system.process(timeStep, systemContextProvider(system))
         }
@@ -28,7 +28,7 @@ internal class SerialExecutionLayer(systems: List<System>): ExecutionLayer(syste
 }
 
 internal class ParallelExecutionLayer(systems: List<System>): ExecutionLayer(systems) {
-    override suspend fun execute(timeStep: Double, systemContextProvider: (System) -> SystemContext) {
+    override fun execute(timeStep: Double, systemContextProvider: (System) -> SystemContext) = runBlocking {
         val jobs = mutableListOf<Job>()
 
         for (system in systems) {
