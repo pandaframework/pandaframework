@@ -7,7 +7,7 @@ import kotlin.reflect.KClass
 typealias Entity = Int
 
 class EntityEditor internal constructor(internal val entityReference: EntityReference,
-                                        internal val componentTypeMap: Map<ComponentType, ComponentId>) {
+                                        private val componentTypeMap: Map<ComponentType, ComponentId>) {
     val entity: Entity = entityReference.entity
     fun <T: Component> get(component: KClass<T>): T =
         entityReference.get(componentTypeMap.getValue(component))

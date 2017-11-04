@@ -5,9 +5,9 @@ import org.roaringbitmap.buffer.MutableRoaringBitmap
 import kotlin.reflect.KClass
 
 class EditScope internal constructor(internal val componentTypeMap: Map<ComponentType, ComponentId>,
-                                     internal val entityStorage: EntityStorage) {
+                                     internal val entityStorage: EntityStorage,
+                                     internal val entityProvider: EntityProvider) {
     private val entityEditors = mutableMapOf<Entity, EntityEditor>()
-    private val entityProvider = BasicEntityProvider()
 
     fun Context.create() = editorFor(entityProvider.acquire())
 

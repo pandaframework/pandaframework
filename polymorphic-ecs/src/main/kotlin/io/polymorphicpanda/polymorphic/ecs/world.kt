@@ -62,7 +62,8 @@ class WorldBuilder {
 
         val editScope = EditScope(
             componentTypes.associate { it to mapper.map(it) },
-            EntityStorage(DirtyEntityTracker())
+            EntityStorage(DirtyEntityTracker()),
+            BasicEntityProvider()
         )
 
         return World(
