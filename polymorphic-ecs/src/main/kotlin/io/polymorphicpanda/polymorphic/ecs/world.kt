@@ -7,7 +7,7 @@ import kotlin.reflect.KClass
 class World internal constructor(
     val worldContext: WorldContext,
     internal val executionLayers: List<ExecutionLayer>,
-    val dispatcher: CoroutineDispatcher
+    val coroutineDispatcher: CoroutineDispatcher
 ) {
     private var initRequired = true
 
@@ -27,7 +27,7 @@ class World internal constructor(
         }
 
         for (executionLayer in executionLayers) {
-            executionLayer.execute(dispatcher, timeStep, worldContext::contextFor)
+            executionLayer.execute(coroutineDispatcher, timeStep, worldContext::contextFor)
 
             worldContext.resolveChangeSets()
         }
@@ -42,7 +42,7 @@ class World internal constructor(
 class WorldBuilder {
     private val componentTypes = mutableListOf<KClass<out Component>>()
     private val executionLayers = mutableListOf<ExecutionLayer>()
-    private var dispatcher: CoroutineDispatcher = CommonPool
+    private var coroutineDispatcher: CoroutineDispatcher = CommonPool
 
     fun withExecutionLayer(systems: List<System>): WorldBuilder {
         addExecutionLayer(SerialExecutionLayer(systems))
@@ -59,8 +59,8 @@ class WorldBuilder {
         return this
     }
 
-    fun withComponents(dispatcher: CoroutineDispatcher): WorldBuilder {
-        this.dispatcher = dispatcher
+    fun withCoroutineDispatcher(coroutineDispatcher: CoroutineDispatcher): WorldBuilder {
+        this.coroutineDispatcher = coroutineDispatcher
         return this
     }
 
@@ -76,7 +76,7 @@ class WorldBuilder {
         return World(
             WorldContext(editScope),
             executionLayers,
-            dispatcher
+            coroutineDispatcher
         )
     }
 
