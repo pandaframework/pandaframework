@@ -4,6 +4,7 @@ import com.nhaarman.mockito_kotlin.eq
 import com.nhaarman.mockito_kotlin.inOrder
 import com.nhaarman.mockito_kotlin.mock
 import com.nhaarman.mockito_kotlin.verify
+import kotlinx.coroutines.experimental.CommonPool
 import kotlinx.coroutines.experimental.runBlocking
 import org.jetbrains.spek.api.Spek
 import org.jetbrains.spek.api.dsl.it
@@ -26,7 +27,7 @@ object SerialExecutionLayerSpec: Spek({
         val timeStep = 1.0
         val inOrder = inOrder(system1, system2)
 
-        runBlocking { executionLayer.execute(timeStep, contextMap::getValue) }
+        runBlocking { executionLayer.execute(CommonPool, timeStep, contextMap::getValue) }
 
         it("should invoke System#process") {
             runBlocking {

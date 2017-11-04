@@ -1,19 +1,22 @@
 package io.polymorphicpanda.polymorphic.ecs
 
 import kotlinx.coroutines.experimental.CommonPool
-import kotlinx.coroutines.experimental.launch
-import kotlinx.coroutines.experimental.runBlocking
+import kotlinx.coroutines.experimental.CoroutineDispatcher
 import kotlin.reflect.KClass
 
 class World internal constructor(
     val worldContext: WorldContext,
-    internal val executionLayers: List<ExecutionLayer>
+    internal val executionLayers: List<ExecutionLayer>,
+    val dispatcher: CoroutineDispatcher
 ) {
     private var initRequired = true
 
     fun init() {
         executionLayers.flatMap(ExecutionLayer::systems)
-            .forEach(worldContext::registerSystem)
+            .forEach { system ->
+                worldContext.registerSystem(system)
+                system.init()
+            }
 
         initRequired = false
     }
@@ -24,9 +27,7 @@ class World internal constructor(
         }
 
         for (executionLayer in executionLayers) {
-            runBlocking {
-                launch(CommonPool) { executionLayer.execute(timeStep, worldContext::contextFor) }
-            }
+            executionLayer.execute(dispatcher, timeStep, worldContext::contextFor)
 
             worldContext.resolveChangeSets()
         }
@@ -41,6 +42,7 @@ class World internal constructor(
 class WorldBuilder {
     private val componentTypes = mutableListOf<KClass<out Component>>()
     private val executionLayers = mutableListOf<ExecutionLayer>()
+    private var dispatcher: CoroutineDispatcher = CommonPool
 
     fun withExecutionLayer(systems: List<System>): WorldBuilder {
         addExecutionLayer(SerialExecutionLayer(systems))
@@ -57,6 +59,11 @@ class WorldBuilder {
         return this
     }
 
+    fun withComponents(dispatcher: CoroutineDispatcher): WorldBuilder {
+        this.dispatcher = dispatcher
+        return this
+    }
+
     fun build(): World {
         val mapper = ComponentMapper()
 
@@ -68,7 +75,8 @@ class WorldBuilder {
 
         return World(
             WorldContext(editScope),
-            executionLayers
+            executionLayers,
+            dispatcher
         )
     }
 

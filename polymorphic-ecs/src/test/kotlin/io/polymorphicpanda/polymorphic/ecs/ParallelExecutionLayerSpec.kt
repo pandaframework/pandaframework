@@ -3,6 +3,7 @@ package io.polymorphicpanda.polymorphic.ecs
 import com.natpryce.hamkrest.assertion.assert
 import com.natpryce.hamkrest.lessThanOrEqualTo
 import com.nhaarman.mockito_kotlin.mock
+import kotlinx.coroutines.experimental.CommonPool
 import kotlinx.coroutines.experimental.delay
 import org.jetbrains.spek.api.Spek
 import org.jetbrains.spek.api.dsl.describe
@@ -29,7 +30,7 @@ object ParallelExecutionLayerSpec: Spek({
 
             it("should not exceed delay1 + delay2") {
                 val time = measureTimeMillis {
-                    executionLayer.execute(1.0, { mock() })
+                    executionLayer.execute(CommonPool, 1.0, { mock() })
                 }
 
                 assert.that(time, lessThanOrEqualTo(delay1 + delay2))

@@ -3,6 +3,7 @@ package io.polymorphicpanda.polymorphic.ecs
 import kotlinx.coroutines.experimental.Job
 import kotlinx.coroutines.experimental.launch
 import kotlinx.coroutines.experimental.runBlocking
+import kotlin.coroutines.experimental.CoroutineContext
 
 abstract class System {
     abstract val aspect: Aspect
@@ -14,13 +15,15 @@ abstract class System {
     open fun dispose() { }
 }
 
+internal typealias SystemContextProvider = (System) -> SystemContext
 
 internal abstract class ExecutionLayer(val systems: List<System>) {
-    abstract fun execute(timeStep: Double, systemContextProvider: (System) -> SystemContext)
+    abstract fun execute(coroutineContext: CoroutineContext, timeStep: Double, systemContextProvider: SystemContextProvider)
 }
 
 internal class SerialExecutionLayer(systems: List<System>): ExecutionLayer(systems) {
-    override fun execute(timeStep: Double, systemContextProvider: (System) -> SystemContext) = runBlocking {
+    override fun execute(coroutineContext: CoroutineContext,
+                         timeStep: Double, systemContextProvider: (System) -> SystemContext) = runBlocking(coroutineContext) {
         for (system in systems) {
             system.process(timeStep, systemContextProvider(system))
         }
@@ -28,11 +31,12 @@ internal class SerialExecutionLayer(systems: List<System>): ExecutionLayer(syste
 }
 
 internal class ParallelExecutionLayer(systems: List<System>): ExecutionLayer(systems) {
-    override fun execute(timeStep: Double, systemContextProvider: (System) -> SystemContext) = runBlocking {
+    override fun execute(coroutineContext: CoroutineContext,
+                         timeStep: Double, systemContextProvider: (System) -> SystemContext) = runBlocking(coroutineContext) {
         val jobs = mutableListOf<Job>()
 
         for (system in systems) {
-            jobs += launch { system.process(timeStep, systemContextProvider(system)) }
+            jobs += launch(this.coroutineContext) { system.process(timeStep, systemContextProvider(system)) }
         }
 
         jobs.forEach {
