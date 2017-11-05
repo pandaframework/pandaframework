@@ -2,9 +2,9 @@
 
 ![architecture-overview](diagrams/architecture.png)
 
-> A high level overview of Polymorphic's architecture.
+> A high level overview of Faux's architecture.
 
-Polymorphic is composed of the following components:
+Faux is composed of the following components:
 
 - An `api` which a game is built upon.
 - An `editor` which allows editing certain aspect of a game.
