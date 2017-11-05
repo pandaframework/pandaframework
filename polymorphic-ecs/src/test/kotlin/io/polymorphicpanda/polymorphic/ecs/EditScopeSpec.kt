@@ -65,6 +65,20 @@ object EditScopeSpec: Spek({
         }
     }
 
+    describe("EntityEditor#remove") {
+        it("should delegate to EntityReference") {
+            val entityEditor = mock<EntityEditor>()
+            val entityRef = mock<EntityReference>()
+            whenever(entityEditor.entityReference).thenReturn(entityRef)
+
+            with(editScope) {
+                entityEditor.remove<C1>()
+            }
+
+            verify(entityRef).remove(componentId)
+        }
+    }
+
     on("EntityEditor#destory") {
         val entity = 1
         val entityEditor = mock<EntityEditor>()
