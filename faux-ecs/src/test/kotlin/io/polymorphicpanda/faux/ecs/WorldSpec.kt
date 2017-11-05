@@ -17,8 +17,9 @@ import org.jetbrains.spek.api.dsl.on
 
 object WorldSpec: Spek({
     val worldContext by memoized { mock<WorldContext>() }
-    val system1 = mock<System>()
-    val system2 = mock<System>()
+    val system1 by memoized { mock<System>() }
+    val system2 by memoized { mock<System>() }
+
     val executionLayer1 by memoized {
         mock<ExecutionLayer>().apply {
             whenever(systems).thenReturn(listOf(system1))
