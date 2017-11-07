@@ -2,16 +2,16 @@
 
 The engine is ECS based (Entity - Component - System) with a very simple state machine implementation.
 
-### Result, Option
+### Try, Option
 ```kotlin
 sealed class Option<T: Any> {
     class Some<T: Any> (val result: T): Option<T>()
     object None: Option<Unit>()
 }
 
-sealed class Result<T: Any, E: Throwable> {
-    class Some<T: Any>(val result: T): Result<T, Throwable>()
-    class Error<E: Throwable>(val error: E): Result<Unit, E>()
+sealed class Try<T: Any, E: Throwable> {
+    class Success<T: Any>(val result: T): Result<T, Throwable>()
+    class Failure<E: Throwable>(val error: E): Result<Unit, E>()
 }
 
 ```
@@ -94,6 +94,9 @@ interface State {
     suspend fun ProducerScope<Progress>.init() 
 }
 ```
+
+### Editor specific APIs
+TODO
 
 ### Entry Point
 TODO
