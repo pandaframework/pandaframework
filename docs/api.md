@@ -4,15 +4,32 @@ The engine is ECS based (Entity - Component - System) with a very simple state m
 
 ### Try, Option
 ```kotlin
-sealed class Option<T: Any> {
-    class Some<T: Any> (val result: T): Option<T>()
-    object None: Option<Unit>()
+sealed class Option<out T> {
+    data class Some<out T> (val result: T): Option<T>()
+    object None: Option<Nothing>()
+
+    fun <K> map(transform: (T) -> K): Option<K> = when (this) {
+        is Some<T> -> Some(transform(result))
+        is None -> None
+    }
 }
 
-sealed class Try<T: Any, E: Throwable> {
-    class Success<T: Any>(val result: T): Result<T, Throwable>()
-    class Failure<E: Throwable>(val error: E): Result<Unit, E>()
+typealias Some<T> = Option.Some<T>
+typealias None = Option.None
+
+sealed class Try<out T> {
+    data class Success<out T>(val result: T): Try<T>()
+    data class Failure(val error: Throwable): Try<Nothing>()
+
+    fun <K> map(transform: (T) -> K): Try<K> = when (this) {
+        is Success<T> -> Success(transform(result))
+        is Failure -> this
+    }
 }
+
+typealias Success<T> = Try.Success<T>
+typealias Failure = Try.Failure
+
 
 ```
 
