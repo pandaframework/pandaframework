@@ -82,6 +82,17 @@ fun init() {
 
 It could work by creating an instance (via reflection) to trigger the init block, but we want to avoid that in the first place.
 
+### Editor/Runtime Hook
+Each platform have a different way to load the `mainClass`, for example in `native` it can be done using shared libraries while in `jvm` a `ServiceLoader` can be used. The hook will be different for each platform and will be not be public. With this in mind, the directory structure of the game will be:
+
+```
+<the-game>/
+    game/ # common kotlin module
+    hook/ # platform specific hooking module
+```
+
+`hook` will contain platform specific hooking logic while `game` will contain the actual code for the game.
+
 ### Lifecycle
 TBD
 
