@@ -1,2 +1,4 @@
 include 'faux-ecs'
 include 'faux-core'
+
+include 'faux-api-common'

@@ -27,6 +27,7 @@ subprojects {
     dependencyManagement {
         dependencies {
             dependencySet(group:'org.jetbrains.kotlin', version: kotlinVersion) {
+                entry 'kotlin-stdlib-common'
                 entry 'kotlin-stdlib-jdk8'
                 entry 'kotlin-reflect'
             }
