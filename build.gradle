@@ -33,7 +33,9 @@ subprojects {
             }
 
             dependencySet(group:'org.jetbrains.kotlinx', version: '0.19.3') {
-                entry 'kotlinx-coroutines-core'
+                entry('kotlinx-coroutines-core') {
+                    exclude 'org.jetbrains.kotlin:kotlin-stdlib'
+                }
             }
 
             dependency 'org.roaringbitmap:RoaringBitmap:0.6.51'
