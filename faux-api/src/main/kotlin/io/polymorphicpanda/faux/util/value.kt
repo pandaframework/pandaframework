@@ -42,7 +42,7 @@ sealed class Try<T: Any> {
 
     fun get(): T = when (this) {
         is Success<T> -> result
-        else -> throw NoSuchElementException()
+        is Failure -> throw error
     }
 
     fun getOrElse(producer: () -> T): T = when (this) {

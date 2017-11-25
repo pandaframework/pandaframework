@@ -1,2 +1,9 @@
 apply from: "$rootDir/gradle/common/kotlin-jvm.gradle"
 
+dependencies {
+    expectedBy project(':faux-core')
+}
+
+dependencies {
+    implementation project(':faux-api-jvm')
+}

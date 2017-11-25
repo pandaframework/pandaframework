@@ -1,2 +1,9 @@
 apply from: "$rootDir/gradle/common/kotlin-jvm.gradle"
 
+dependencies {
+    expectedBy project(':faux-editor')
+}
+
+dependencies {
+    implementation project(':faux-core-jvm')
+}

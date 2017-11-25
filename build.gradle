@@ -1,7 +1,7 @@
 buildscript {
     repositories {
         maven {
-            url 'https://dl.bintray.com/kotlin/kotlin-dev'
+            url 'https://dl.bintray.com/kotlin/kotlin-eap-1.2'
         }
         jcenter()
     }
@@ -19,7 +19,7 @@ subprojects {
 
     repositories {
         maven {
-            url 'https://dl.bintray.com/kotlin/kotlin-dev'
+            url 'https://dl.bintray.com/kotlin/kotlin-eap-1.2'
         }
         jcenter()
     }
