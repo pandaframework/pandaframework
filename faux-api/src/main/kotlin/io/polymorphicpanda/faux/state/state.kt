@@ -4,13 +4,11 @@ import io.polymorphicpanda.faux.entity.Context
 import io.polymorphicpanda.faux.runtime.Descriptor
 import io.polymorphicpanda.faux.runtime.Faux
 import io.polymorphicpanda.faux.service.Service
-import io.polymorphicpanda.faux.util.Some
-import io.polymorphicpanda.faux.util.Try
 import kotlinx.coroutines.experimental.channels.ProducerScope
 import kotlinx.coroutines.experimental.channels.ReceiveChannel
 
 data class Progress(val progress: Double, val description: String)
-interface StateContext: Context
+interface WorldContext: Context
 
 abstract class State {
     inline fun <reified T: Service> service() = lazy { Faux.getService<T>() }
@@ -18,15 +16,15 @@ abstract class State {
 
     suspend open fun ProducerScope<Progress>.init() { }
     open fun dispose() { }
-    open fun update(duration: Double, context: StateContext) { }
+    open fun update(duration: Double, context: WorldContext) { }
 }
 
 interface StateDescriptor<T: State>: Descriptor<T>
 interface StateManager: Service {
-    fun set(descriptor: StateDescriptor<*>): Try<ReceiveChannel<Progress>>
-    fun push(descriptor: StateDescriptor<*>): Try<ReceiveChannel<Progress>>
-    fun peek(): Some<StateDescriptor<*>>
-    fun pop(): Some<StateDescriptor<*>>
+    fun set(descriptor: StateDescriptor<*>): ReceiveChannel<Progress>
+    fun push(descriptor: StateDescriptor<*>): ReceiveChannel<Progress>
+    fun peek(): StateDescriptor<*>
+    fun pop(): StateDescriptor<*>
 }
 
 abstract class TransitionState<T: State>: State() {
@@ -34,12 +32,10 @@ abstract class TransitionState<T: State>: State() {
     var progressChannel: ReceiveChannel<Progress>? = null
 
     suspend override fun ProducerScope<Progress>.init() {
-        val transition = stateManager.set(nextState)
-
-        progressChannel = transition.getOrNull()
+        progressChannel = stateManager.set(nextState)
     }
 
-    override final fun update(duration: Double, context: StateContext) {
+    override final fun update(duration: Double, context: WorldContext) {
         try {
             if (progressChannel != null) {
                 progressChannel!!.poll()?.let { progress ->

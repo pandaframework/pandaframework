@@ -8,9 +8,11 @@ import io.polymorphicpanda.faux.service.Service
 import io.polymorphicpanda.faux.service.ServiceDescriptor
 import io.polymorphicpanda.faux.state.StateDescriptor
 import io.polymorphicpanda.faux.system.SystemDescriptor
-import io.polymorphicpanda.faux.util.Some
 
 interface EngineConfig {
+    fun setWindowSize(width: Int, height: Int)
+    fun setWindowTitle(title: String)
+
     fun <T: Component> registerComponent(descriptor: ComponentDescriptor<T>)
     fun <T: Blueprint> registerBlueprint(descriptor: BlueprintDescriptor<T>)
     fun <T: Service> registerService(descriptor: ServiceDescriptor<T>)
@@ -18,7 +20,7 @@ interface EngineConfig {
 }
 
 interface Application {
-    val initialState: Some<StateDescriptor<*>>
+    val initialState: StateDescriptor<*>?
     fun init(config: EngineConfig) { }
     fun dispose() { }
 }
