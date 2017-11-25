@@ -1,0 +1,17 @@
+apply from: "$rootDir/gradle/common/kotlin-jvm.gradle"
+apply plugin: 'application'
+
+mainClassName = 'io.polymorphicpanda.faux.editor.MainKt'
+
+dependencies {
+    expectedBy project(':sample-game')
+}
+
+dependencies {
+    compile project(':faux-api-jvm')
+
+    runtime project(':faux-editor-jvm')
+    runtime group: 'org.lwjgl', name: 'lwjgl', classifier: lwjglNatives
+    runtime group: 'org.lwjgl', name: 'lwjgl-glfw', classifier: lwjglNatives
+    runtime group: 'org.lwjgl', name: 'lwjgl-opengl', classifier: lwjglNatives
+}

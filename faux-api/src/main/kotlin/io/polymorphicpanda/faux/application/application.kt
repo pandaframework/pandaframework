@@ -17,10 +17,11 @@ interface EngineConfig {
     fun <T: Blueprint> registerBlueprint(descriptor: BlueprintDescriptor<T>)
     fun <T: Service> registerService(descriptor: ServiceDescriptor<T>)
     fun registerSystem(descriptor: SystemDescriptor<*>, dependencies: List<SystemDescriptor<*>>)
+
+    fun setInitialState(state: StateDescriptor<*>)
 }
 
 interface Application {
-    val initialState: StateDescriptor<*>?
     fun init(config: EngineConfig) { }
     fun dispose() { }
 }

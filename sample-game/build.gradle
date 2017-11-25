@@ -1,5 +1,5 @@
 apply from: "$rootDir/gradle/common/kotlin-common.gradle"
 
 dependencies {
-    compile project(':faux-core')
+    compile project(':faux-api')
 }

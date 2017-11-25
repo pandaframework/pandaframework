@@ -5,5 +5,8 @@ dependencies {
 }
 
 dependencies {
-    implementation project(':faux-api-jvm')
+    compile project(':faux-api-jvm')
+    implementation "org.lwjgl:lwjgl"
+    implementation "org.lwjgl:lwjgl-glfw"
+    implementation "org.lwjgl:lwjgl-opengl"
 }

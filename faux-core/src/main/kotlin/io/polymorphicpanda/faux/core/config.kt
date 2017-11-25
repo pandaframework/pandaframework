@@ -7,6 +7,7 @@ import io.polymorphicpanda.faux.component.Component
 import io.polymorphicpanda.faux.component.ComponentDescriptor
 import io.polymorphicpanda.faux.service.Service
 import io.polymorphicpanda.faux.service.ServiceDescriptor
+import io.polymorphicpanda.faux.state.StateDescriptor
 import io.polymorphicpanda.faux.system.SystemDescriptor
 
 private const val DEFAULT_WIDTH = 800
@@ -19,7 +20,7 @@ data class WindowConfig(
     var title: String
 )
 
-class EngineConfigurer: EngineConfig {
+class EngineSettings: EngineConfig {
     val windowConfig = WindowConfig(
         DEFAULT_WIDTH,
         DEFAULT_HEIGHT,
@@ -52,4 +53,7 @@ class EngineConfigurer: EngineConfig {
         TODO()
     }
 
+    override fun setInitialState(state: StateDescriptor<*>) {
+        TODO()
+    }
 }
