@@ -2,6 +2,6 @@ package io.polymorphicpanda.faux.core
 
 import io.polymorphicpanda.faux.application.Application
 
-expect class Bootstrapper() {
+expect class ApplicationLoader() {
     fun load(): Application
 }

@@ -4,7 +4,7 @@ apply plugin: 'application'
 mainClassName = 'io.polymorphicpanda.faux.editor.MainKt'
 
 dependencies {
-    expectedBy project(':sample-game')
+    expectedBy project(':sample')
 }
 
 dependencies {

@@ -5,7 +5,7 @@ import io.polymorphicpanda.faux.bootstrap.Bootstrap
 import io.polymorphicpanda.faux.runtime.FauxException
 import java.util.ServiceLoader
 
-actual class Bootstrapper {
+actual class ApplicationLoader {
     private val serviceLoader = ServiceLoader.load(Bootstrap::class.java)
 
     actual fun load(): Application {

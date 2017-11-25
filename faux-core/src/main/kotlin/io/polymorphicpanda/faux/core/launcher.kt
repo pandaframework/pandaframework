@@ -1,28 +1,34 @@
 package io.polymorphicpanda.faux.core
 
-abstract class Launcher {
+abstract class EngineConfigurer {
+    fun configure(settings: EngineSettings): Engine {
+        configureStandard(settings)
+        configureSpecific(settings)
+        return createEngine(settings)
+    }
+
+    protected abstract fun configureSpecific(settings: EngineSettings)
+    private fun configureStandard(settings: EngineSettings) {}
+    private fun createEngine(settings: EngineSettings) = Engine(OpenGlBackend())
+
+}
+
+class Launcher(val configurer: EngineConfigurer) {
     private lateinit var window: Window
     private lateinit var engine: Engine
     private val clock = Clock()
 
-    fun run(args: Array<String>) {
+    fun launch(args: Array<String>) {
         val settings = EngineSettings()
-        val application = Bootstrapper().load()
-
+        val application = ApplicationLoader().load()
         application.init(settings)
-        initLauncherSettings(settings)
-        initStandardSettings(settings)
-
-        engine = createEngine(settings)
+        engine = configurer.configure(settings)
         window = WindowFactory.create(settings.windowConfig, engine)
 
         window.init()
         loop()
         window.dispose()
     }
-
-
-    protected abstract fun initLauncherSettings(settings: EngineSettings)
 
     private fun loop() {
         var lastUpdate = clock.getTime()
@@ -35,13 +41,5 @@ abstract class Launcher {
 
             lastUpdate = clock.getTime()
         }
-    }
-
-    private fun initStandardSettings(settings: EngineSettings) {
-
-    }
-
-    private fun createEngine(settings: EngineSettings): Engine {
-        return Engine(OpenGlBackend())
     }
 }

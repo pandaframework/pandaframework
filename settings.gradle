@@ -9,5 +9,5 @@ include 'faux-core-jvm'
 include 'faux-editor'
 include 'faux-editor-jvm'
 
-include 'sample-game'
-include 'sample-game-jvm'
+include 'sample'
+include 'sample-jvm'
