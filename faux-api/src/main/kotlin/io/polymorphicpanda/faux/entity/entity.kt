@@ -8,8 +8,8 @@ typealias Entity = Int
 
 abstract class EntityEditor {
     abstract val entity: Entity
-    abstract fun <T: Component> get(component: KClass<T>): T
-    abstract fun contains(component: KClass<out Component>): Boolean
+    abstract fun <T: Component> get(componentType: KClass<T>): T
+    abstract fun contains(componentType: KClass<out Component>): Boolean
     abstract fun <T: Component> add(component: T): EntityEditor
     abstract fun <T: Component> remove(componentType: KClass<T>): EntityEditor
     abstract fun destroy()

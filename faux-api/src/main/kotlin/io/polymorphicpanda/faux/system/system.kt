@@ -2,6 +2,7 @@ package io.polymorphicpanda.faux.system
 
 import io.polymorphicpanda.faux.component.ComponentType
 import io.polymorphicpanda.faux.entity.Context
+import io.polymorphicpanda.faux.entity.Entity
 import io.polymorphicpanda.faux.runtime.Descriptor
 import io.polymorphicpanda.faux.runtime.Faux
 import io.polymorphicpanda.faux.service.Service
@@ -16,14 +17,17 @@ data class Aspect internal constructor(val included: List<ComponentType>,
 private val initial = Aspect(emptyList(), emptyList())
 fun aspects() = initial
 
-interface SystemContext: Context
+interface SystemContext: Context {
+    fun entities(): Set<Entity>
+}
 
 abstract class System {
     inline fun <reified T: Service> service() = lazy { Faux.getService<T>() }
     val stateManager by service<StateManager>()
 
-    abstract val aspect: Aspect
     abstract fun process(duration: Double, context: SystemContext)
 }
 
-interface SystemDescriptor<T: System>: Descriptor<T>
+interface SystemDescriptor<T: System>: Descriptor<T> {
+    abstract val aspect: Aspect
+}

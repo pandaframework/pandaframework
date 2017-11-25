@@ -8,7 +8,7 @@ import kotlinx.coroutines.experimental.channels.ProducerScope
 import kotlinx.coroutines.experimental.channels.ReceiveChannel
 
 data class Progress(val progress: Double, val description: String)
-interface WorldContext: Context
+interface GlobalContext: Context
 
 abstract class State {
     inline fun <reified T: Service> service() = lazy { Faux.getService<T>() }
@@ -16,7 +16,7 @@ abstract class State {
 
     suspend open fun ProducerScope<Progress>.init() { }
     open fun dispose() { }
-    open fun update(duration: Double, context: WorldContext) { }
+    open fun update(duration: Double, context: GlobalContext) { }
 }
 
 interface StateDescriptor<T: State>: Descriptor<T>
@@ -35,7 +35,7 @@ abstract class TransitionState<T: State>: State() {
         progressChannel = stateManager.set(nextState)
     }
 
-    override final fun update(duration: Double, context: WorldContext) {
+    override final fun update(duration: Double, context: GlobalContext) {
         try {
             if (progressChannel != null) {
                 progressChannel!!.poll()?.let { progress ->
