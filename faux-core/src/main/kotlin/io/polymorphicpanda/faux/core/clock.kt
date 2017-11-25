@@ -1,5 +1,11 @@
 package io.polymorphicpanda.faux.core
 
-expect class Clock() {
+import org.lwjgl.glfw.GLFW
+
+interface Clock {
     fun getTime(): Double
+}
+
+class GlfwClock: Clock {
+    override fun getTime() = GLFW.glfwGetTime()
 }

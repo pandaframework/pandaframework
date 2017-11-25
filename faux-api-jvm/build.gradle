@@ -1,5 +1,0 @@
-apply from: "$rootDir/gradle/common/kotlin-jvm.gradle"
-
-dependencies {
-    expectedBy project(':faux-api')
-}

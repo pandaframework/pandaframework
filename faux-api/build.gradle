@@ -1,2 +1,2 @@
-apply from: "$rootDir/gradle/common/kotlin-common.gradle"
+apply from: "$rootDir/gradle/common/kotlin-jvm.gradle"
 

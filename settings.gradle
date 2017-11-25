@@ -1,13 +1,13 @@
 include 'faux-ecs'
 
 include 'faux-api'
-include 'faux-api-jvm'
+//include 'faux-api-jvm'
 
 include 'faux-core'
-include 'faux-core-jvm'
+//include 'faux-core-jvm'
 
 include 'faux-editor'
-include 'faux-editor-jvm'
+//include 'faux-editor-jvm'
 
 include 'sample'
-include 'sample-jvm'
+//include 'sample-jvm'

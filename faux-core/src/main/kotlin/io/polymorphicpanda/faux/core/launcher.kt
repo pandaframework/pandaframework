@@ -16,7 +16,7 @@ abstract class EngineConfigurer {
 class Launcher(val configurer: EngineConfigurer) {
     private lateinit var window: Window
     private lateinit var engine: Engine
-    private val clock = Clock()
+    private val clock: Clock = GlfwClock()
 
     fun launch(args: Array<String>) {
         val settings = EngineSettings()
