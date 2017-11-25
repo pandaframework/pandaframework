@@ -1,12 +1,21 @@
 package io.polymorphicpanda.faux.system
 
+import io.polymorphicpanda.faux.component.ComponentType
 import io.polymorphicpanda.faux.entity.Context
 import io.polymorphicpanda.faux.runtime.Descriptor
 import io.polymorphicpanda.faux.runtime.Faux
 import io.polymorphicpanda.faux.service.Service
 import io.polymorphicpanda.faux.state.StateManager
 
-class Aspect
+data class Aspect internal constructor(val included: List<ComponentType>,
+                                       val excluded: List<ComponentType>) {
+    fun with(vararg componentTypes: ComponentType) = copy(included = included + componentTypes)
+    fun without(vararg componentTypes: ComponentType) = copy(excluded = excluded + componentTypes)
+}
+
+private val initial = Aspect(emptyList(), emptyList())
+fun aspects() = initial
+
 interface SystemContext: Context
 
 abstract class System {
