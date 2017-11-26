@@ -1,13 +1,13 @@
 package io.polymorphicpanda.faux.core.util
 
-class DynamicGraph<T> {
-    data class Node<out T>(val value: T)
+data class Node<out T>(val value: T)
 
-    private val nodes = hashSetOf<Node<T>>()
-    // <node> is a dependency of <listOf(nodes)>
-    private val dependencyOf = mutableMapOf<Node<T>, MutableList<Node<T>>>()
-    // <node> depends on <listOf(nodes)>
-    private val dependsOn = mutableMapOf<Node<T>, MutableList<Node<T>>>()
+data class DynamicGraph<T>(private val nodes: HashSet<Node<T>> = hashSetOf(),
+                            // <node> is a dependency of <listOf(nodes)>
+                           private val dependencyOf: MutableMap<Node<T>, MutableList<Node<T>>> = mutableMapOf(),
+                            // <node> depends on <listOf(nodes)>
+                           private val dependsOn: MutableMap<Node<T>, MutableList<Node<T>>> = mutableMapOf()) {
+
 
     fun addNode(value: T) {
         nodes.add(Node(value))
