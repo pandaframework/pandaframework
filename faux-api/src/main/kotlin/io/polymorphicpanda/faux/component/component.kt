@@ -4,6 +4,7 @@ import io.polymorphicpanda.faux.runtime.Descriptor
 import io.polymorphicpanda.faux.runtime.FCompoundType
 import io.polymorphicpanda.faux.runtime.SerializationContext
 import io.polymorphicpanda.faux.runtime.Vec3
+import io.polymorphicpanda.faux.runtime.fType
 import kotlin.reflect.KClass
 
 typealias ComponentType = KClass<out Component>
@@ -11,7 +12,7 @@ interface Component
 
 abstract class ComponentDescriptor<T: Component>: Descriptor<T> {
     abstract val type: FCompoundType<T>
-    protected fun fType() = io.polymorphicpanda.faux.runtime.fType(id.qualifiedName!!, this::create)
+    protected fun fType() = fType(id.qualifiedName!!, this::create)
 }
 
 data class Transform(var t: Vec3 = Vec3()): Component {
@@ -20,7 +21,7 @@ data class Transform(var t: Vec3 = Vec3()): Component {
         override fun create() = Transform()
 
         override val type = fType()
-            .property("t", Vec3.type, Transform::t)
+            .property("t", Vec3.FType, Transform::t)
             .build()
     }
 }

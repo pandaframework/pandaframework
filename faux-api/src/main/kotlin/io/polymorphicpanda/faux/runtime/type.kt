@@ -2,8 +2,7 @@ package io.polymorphicpanda.faux.runtime
 
 import kotlin.reflect.KMutableProperty1
 
-
-abstract class FType<T: Any>{
+abstract class FType<T: Any>(val constraint: Constraint<T>? = null) {
     abstract fun serialize(context: SerializationContext, value: T)
     abstract fun deserialize(context: DeserializationContext): T
 }
@@ -51,6 +50,18 @@ object FString: FPrimitiveType<String>() {
     override fun toString() = "String"
 }
 
+class FEnumType<T: Enum<T>>(private val values: List<T>): FType<T>(ValueConstraint(values)) {
+    override fun serialize(context: SerializationContext, value: T) {
+        context.write(value.name)
+    }
+
+    override fun deserialize(context: DeserializationContext): T {
+        val value = context.read()
+        return values.first { it.name == value }
+    }
+
+}
+
 class FCompoundType<T: Any>(val name: String,
                             val properties: Map<Pair<String, FType<Any>>, KMutableProperty1<Any, Any>>,
                             private val factory: () -> T)
@@ -95,17 +106,21 @@ class FCompoundTypePropertyBuilder<T: Any>(private val name: String,
 }
 
 fun <T: Any> fType(name: String, factory: () -> T) = FCompoundTypePropertyBuilder(name, factory)
+inline fun <reified T: Enum<T>> fEnumType() = FEnumType(enumValues<T>().toList())
 
+enum class T { I }
 class Vec3 {
     var x: Double = 0.0
     var y: Double = 0.0
     var z: Double = 0.0
+    var t: T = T.I
 
     companion object {
-        val type = fType("Vec3", ::Vec3)
+        val FType = fType("Vec3", ::Vec3)
             .property("x", FDouble, Vec3::x)
             .property("y", FDouble, Vec3::y)
             .property("z", FDouble, Vec3::z)
+            .property("t", fEnumType(), Vec3::t)
             .build()
     }
 }
