@@ -1,4 +1,4 @@
-package io.polymorphicpanda.faux.core
+package io.polymorphicpanda.faux.core.backend
 
 import org.lwjgl.opengl.GL11
 

@@ -1,4 +1,4 @@
-package io.polymorphicpanda.faux.core
+package io.polymorphicpanda.faux.core.config
 
 import io.polymorphicpanda.faux.application.EngineConfig
 import io.polymorphicpanda.faux.blueprint.Blueprint

@@ -1,4 +1,4 @@
-package io.polymorphicpanda.faux.core
+package io.polymorphicpanda.faux.core.engine
 
 import io.polymorphicpanda.faux.component.Component
 import io.polymorphicpanda.faux.component.ComponentType

@@ -1,4 +1,10 @@
-package io.polymorphicpanda.faux.core
+package io.polymorphicpanda.faux.core.launcher
+
+import io.polymorphicpanda.faux.core.backend.OpenGlBackend
+import io.polymorphicpanda.faux.core.config.EngineSettings
+import io.polymorphicpanda.faux.core.engine.Engine
+import io.polymorphicpanda.faux.core.window.Window
+import io.polymorphicpanda.faux.core.window.WindowFactory
 
 abstract class EngineConfigurer {
     fun configure(settings: EngineSettings): Engine {

@@ -2,6 +2,7 @@ package io.polymorphicpanda.faux.core
 
 import com.natpryce.hamkrest.assertion.assert
 import com.natpryce.hamkrest.equalTo
+import io.polymorphicpanda.faux.core.engine.BasicEntityProvider
 import org.jetbrains.spek.api.Spek
 import org.jetbrains.spek.api.dsl.it
 

@@ -1,4 +1,4 @@
-package io.polymorphicpanda.faux.core
+package io.polymorphicpanda.faux.core.launcher
 
 import org.lwjgl.glfw.GLFW
 

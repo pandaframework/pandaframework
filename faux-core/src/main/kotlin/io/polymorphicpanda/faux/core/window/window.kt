@@ -1,6 +1,8 @@
-package io.polymorphicpanda.faux.core
+package io.polymorphicpanda.faux.core.window
 
-import io.polymorphicpanda.faux.core.lwjgl.NULL
+import io.polymorphicpanda.faux.core.engine.Engine
+import io.polymorphicpanda.faux.core.config.WindowConfig
+import io.polymorphicpanda.faux.core.util.NULL
 import io.polymorphicpanda.faux.runtime.FauxException
 import org.lwjgl.glfw.GLFW
 import org.lwjgl.glfw.GLFWErrorCallback

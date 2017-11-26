@@ -1,4 +1,4 @@
-package io.polymorphicpanda.faux.core
+package io.polymorphicpanda.faux.core.launcher
 
 import io.polymorphicpanda.faux.application.Application
 import io.polymorphicpanda.faux.runtime.FauxException

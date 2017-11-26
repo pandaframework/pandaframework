@@ -1,8 +1,8 @@
 package io.polymorphicpanda.faux.editor
 
-import io.polymorphicpanda.faux.core.EngineConfigurer
-import io.polymorphicpanda.faux.core.EngineSettings
-import io.polymorphicpanda.faux.core.Launcher
+import io.polymorphicpanda.faux.core.launcher.EngineConfigurer
+import io.polymorphicpanda.faux.core.config.EngineSettings
+import io.polymorphicpanda.faux.core.launcher.Launcher
 
 class EditorConfigurer: EngineConfigurer() {
     override fun configureSpecific(settings: EngineSettings) {

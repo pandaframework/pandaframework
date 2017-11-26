@@ -4,13 +4,9 @@ import com.natpryce.hamkrest.assertion.assert
 import com.natpryce.hamkrest.assertion.assertThat
 import com.natpryce.hamkrest.equalTo
 import com.natpryce.hamkrest.sameInstance
-import com.nhaarman.mockito_kotlin.eq
-import com.nhaarman.mockito_kotlin.isNull
-import com.nhaarman.mockito_kotlin.mock
-import com.nhaarman.mockito_kotlin.never
-import com.nhaarman.mockito_kotlin.times
-import com.nhaarman.mockito_kotlin.verify
 import io.polymorphicpanda.faux.component.Component
+import io.polymorphicpanda.faux.core.engine.EntityStorage
+import io.polymorphicpanda.faux.core.engine.EntityStorageRef
 import org.jetbrains.spek.api.Spek
 import org.jetbrains.spek.api.dsl.describe
 import org.jetbrains.spek.api.dsl.it
