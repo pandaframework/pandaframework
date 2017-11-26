@@ -7,6 +7,7 @@ import io.polymorphicpanda.faux.runtime.Descriptor
 import io.polymorphicpanda.faux.runtime.Faux
 import io.polymorphicpanda.faux.service.Service
 import io.polymorphicpanda.faux.state.StateManager
+import kotlinx.coroutines.experimental.CoroutineScope
 
 data class Aspect internal constructor(val included: List<ComponentType>,
                                        val excluded: List<ComponentType>) {
@@ -25,7 +26,7 @@ abstract class System {
     inline fun <reified T: Service> service() = lazy { Faux.getService<T>() }
     val stateManager by service<StateManager>()
 
-    abstract fun process(duration: Double, context: SystemContext)
+    abstract suspend fun CoroutineScope.process(duration: Double, context: SystemContext)
 }
 
 interface SystemDescriptor<T: System>: Descriptor<T> {
