@@ -1,12 +1,10 @@
-package io.polymorphicpanda.faux.core
+package io.polymorphicpanda.faux.core.engine
 
 import com.natpryce.hamkrest.assertion.assert
 import com.natpryce.hamkrest.assertion.assertThat
 import com.natpryce.hamkrest.equalTo
 import com.natpryce.hamkrest.sameInstance
 import io.polymorphicpanda.faux.component.Component
-import io.polymorphicpanda.faux.core.engine.EntityStorage
-import io.polymorphicpanda.faux.core.engine.EntityStorageRef
 import org.jetbrains.spek.api.Spek
 import org.jetbrains.spek.api.dsl.describe
 import org.jetbrains.spek.api.dsl.it

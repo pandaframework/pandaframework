@@ -2,7 +2,10 @@ package io.polymorphicpanda.faux.core.launcher
 
 import io.polymorphicpanda.faux.core.backend.OpenGlBackend
 import io.polymorphicpanda.faux.core.config.EngineSettings
+import io.polymorphicpanda.faux.core.engine.BasicEntityProvider
 import io.polymorphicpanda.faux.core.engine.Engine
+import io.polymorphicpanda.faux.core.engine.EntityStorage
+import io.polymorphicpanda.faux.core.engine.GlobalContextImpl
 import io.polymorphicpanda.faux.core.window.Window
 import io.polymorphicpanda.faux.core.window.WindowFactory
 
@@ -15,7 +18,15 @@ abstract class EngineConfigurer {
 
     protected abstract fun configureSpecific(settings: EngineSettings)
     private fun configureStandard(settings: EngineSettings) {}
-    private fun createEngine(settings: EngineSettings) = Engine(OpenGlBackend())
+    private fun createEngine(settings: EngineSettings): Engine {
+        val entityStorage = EntityStorage()
+        val globalContext = GlobalContextImpl(
+            entityStorage,
+            BasicEntityProvider(),
+            mutableMapOf() // TODO: fixme
+        )
+        return Engine(OpenGlBackend(), globalContext)
+    }
 
 }
 
