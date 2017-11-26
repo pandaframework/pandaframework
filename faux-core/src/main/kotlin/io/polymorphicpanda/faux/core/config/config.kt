@@ -20,12 +20,19 @@ data class WindowConfig(
     var title: String
 )
 
+data class SystemNode(
+    val descriptor: SystemDescriptor<*>,
+    val dependencies: MutableList<SystemNode> = mutableListOf()
+)
+
 class EngineSettings: EngineConfig {
     val windowConfig = WindowConfig(
         DEFAULT_WIDTH,
         DEFAULT_HEIGHT,
         DEFAULT_TITLE
     )
+
+    private val systemNodeMappings = mutableMapOf<SystemDescriptor<*>, SystemNode>()
 
     override fun setWindowSize(width: Int, height: Int) {
         require(width > 0 && height > 0)
@@ -50,10 +57,23 @@ class EngineSettings: EngineConfig {
     }
 
     override fun registerSystem(descriptor: SystemDescriptor<*>, dependencies: List<SystemDescriptor<*>>) {
-        TODO()
+        val node = nodeFor(descriptor)
+        dependencies.map(this::nodeFor)
+            .forEach { node.dependencies.add(it) }
     }
 
     override fun setInitialState(state: StateDescriptor<*>) {
         TODO()
+    }
+
+    fun getSystemGraph(): List<SystemNode> {
+        return systemNodeMappings.values.sortedBy { it.dependencies.size }
+            .toList()
+    }
+
+    private fun nodeFor(descriptor: SystemDescriptor<*>): SystemNode {
+        return systemNodeMappings.computeIfAbsent(descriptor) {
+            SystemNode(descriptor)
+        }
     }
 }
