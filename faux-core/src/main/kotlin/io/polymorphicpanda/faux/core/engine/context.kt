@@ -5,6 +5,7 @@ import io.polymorphicpanda.faux.entity.Context
 import io.polymorphicpanda.faux.entity.Entity
 import io.polymorphicpanda.faux.entity.EntityEditor
 import io.polymorphicpanda.faux.state.GlobalContext
+import io.polymorphicpanda.faux.system.System
 import io.polymorphicpanda.faux.system.SystemContext
 import io.polymorphicpanda.faux.system.SystemDescriptor
 import org.roaringbitmap.buffer.ImmutableRoaringBitmap
@@ -16,7 +17,7 @@ class GlobalContextImpl(private val entityStorage: EntityStorage,
                         private val pools: ComponentPools,
                         private val engineModel: EngineModel): GlobalContext {
     private val entityEditors = ConcurrentHashMap<Entity, EntityEditor>()
-    private val systemContextMappings = mutableMapOf<SystemDescriptor<*>, SystemContextImpl>()
+    private val systemContextMappings = mutableMapOf<System, SystemContextImpl>()
 
     override fun create(blueprint: Blueprint?): EntityEditor {
         return manage(entityProvider.acquire())
@@ -35,19 +36,21 @@ class GlobalContextImpl(private val entityStorage: EntityStorage,
         }
     }
 
-    fun contextFor(descriptor: SystemDescriptor<*>): SystemContext {
-        return systemContextMappings.computeIfAbsent(descriptor) {
-            val includedBitSet = MutableRoaringBitmap()
-            val excludedBitSet = MutableRoaringBitmap()
-            val aspect = descriptor.aspect
-            aspect.included.map { engineModel.componentMappings.getValue(it) }
-                .forEach { includedBitSet.add(it) }
+    fun <T: System> registerSystem(descriptor: SystemDescriptor<*>, system: T) {
+        val includedBitSet = MutableRoaringBitmap()
+        val excludedBitSet = MutableRoaringBitmap()
+        val aspect = descriptor.aspect
+        aspect.included.map { engineModel.componentMappings.getValue(it) }
+            .forEach { includedBitSet.add(it) }
 
-            aspect.excluded.map { engineModel.componentMappings.getValue(it) }
-                .forEach { excludedBitSet.add(it) }
+        aspect.excluded.map { engineModel.componentMappings.getValue(it) }
+            .forEach { excludedBitSet.add(it) }
 
-            SystemContextImpl(this, includedBitSet, excludedBitSet)
-        }
+        systemContextMappings.put(system, SystemContextImpl(this, includedBitSet, excludedBitSet))
+    }
+
+    fun contextFor(system: System): SystemContext {
+        return systemContextMappings.getValue(system)
     }
 }
 

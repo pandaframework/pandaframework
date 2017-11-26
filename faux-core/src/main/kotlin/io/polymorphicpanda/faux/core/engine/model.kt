@@ -4,6 +4,7 @@ import io.polymorphicpanda.faux.component.ComponentDescriptor
 import io.polymorphicpanda.faux.component.ComponentType
 import io.polymorphicpanda.faux.core.config.EngineSettings
 import io.polymorphicpanda.faux.core.util.DynamicGraph
+import io.polymorphicpanda.faux.system.System
 import io.polymorphicpanda.faux.system.SystemDescriptor
 
 data class EngineModel(
@@ -15,15 +16,25 @@ data class EngineModel(
         components.keys.associate { it to mapper.map(it) }
     }
 
-    val systemGraph = DynamicGraph<SystemDescriptor<*>>().apply {
-        systems.forEach { system, dependencies ->
+    private val systemInstanceMap = mutableMapOf<SystemDescriptor<*>, System>()
+
+    val systemGraph = DynamicGraph<System>().apply {
+        systems.forEach { descriptor, dependencies ->
             if (dependencies.isEmpty()) {
-                addNode(system)
+                addNode(systemInstanceFor(descriptor))
             } else {
                 dependencies.forEach {
-                    addEdge(system, it)
+                    addEdge(systemInstanceFor(descriptor), systemInstanceFor(it))
                 }
             }
+        }
+    }
+
+    val systemInstances: Map<SystemDescriptor<*>, System> = systemInstanceMap
+
+    private fun systemInstanceFor(descriptor: SystemDescriptor<*>): System {
+        return systemInstanceMap.computeIfAbsent(descriptor) {
+            descriptor.create()
         }
     }
 

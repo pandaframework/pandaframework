@@ -8,8 +8,10 @@ import io.polymorphicpanda.faux.core.engine.Engine
 import io.polymorphicpanda.faux.core.engine.EngineModel
 import io.polymorphicpanda.faux.core.engine.EntityStorage
 import io.polymorphicpanda.faux.core.engine.GlobalContextImpl
+import io.polymorphicpanda.faux.core.engine.SystemExecutor
 import io.polymorphicpanda.faux.core.window.Window
 import io.polymorphicpanda.faux.core.window.WindowFactory
+import kotlinx.coroutines.experimental.CommonPool
 
 abstract class EngineConfigurer {
     fun configure(settings: EngineSettings): Engine {
@@ -31,7 +33,17 @@ abstract class EngineConfigurer {
             engineModel
         )
 
-        return Engine(OpenGlBackend(), globalContext, engineModel.systemGraph)
+        engineModel.systemInstances.forEach {
+            globalContext.registerSystem(it.key, it.value)
+        }
+
+        return Engine(
+            OpenGlBackend(),
+            globalContext,
+            engineModel.systemGraph,
+            CommonPool,
+            SystemExecutor()
+        )
     }
 
 }
