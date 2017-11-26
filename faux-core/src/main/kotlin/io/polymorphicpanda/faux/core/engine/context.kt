@@ -9,6 +9,7 @@ import io.polymorphicpanda.faux.state.GlobalContext
 import io.polymorphicpanda.faux.system.SystemContext
 import io.polymorphicpanda.faux.system.SystemDescriptor
 import org.roaringbitmap.buffer.ImmutableRoaringBitmap
+import org.roaringbitmap.buffer.MutableRoaringBitmap
 import java.util.concurrent.ConcurrentHashMap
 
 class GlobalContextImpl(private val entityStorage: EntityStorage,
@@ -31,6 +32,21 @@ class GlobalContextImpl(private val entityStorage: EntityStorage,
         entityStorage.resolve { dirty ->
             systemContextMappings.forEach { _, systemContext -> systemContext.resolve(dirty) }
             entityProvider.release(dirty.entity)
+        }
+    }
+
+    fun contextFor(descriptor: SystemDescriptor<*>): SystemContext {
+        return systemContextMappings.computeIfAbsent(descriptor) {
+            val includedBitSet = MutableRoaringBitmap()
+            val excludedBitSet = MutableRoaringBitmap()
+            val aspect = descriptor.aspect
+            aspect.included.map { componentMappings.getValue(it) }
+                .forEach { includedBitSet.add(it) }
+
+            aspect.excluded.map { componentMappings.getValue(it) }
+                .forEach { excludedBitSet.add(it) }
+
+            SystemContextImpl(this, includedBitSet, excludedBitSet)
         }
     }
 }

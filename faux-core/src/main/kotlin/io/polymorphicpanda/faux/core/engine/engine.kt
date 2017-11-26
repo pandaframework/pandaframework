@@ -4,7 +4,8 @@ import io.polymorphicpanda.faux.core.backend.Backend
 import io.polymorphicpanda.faux.event.Event
 
 
-class Engine(private val backend: Backend) {
+class Engine(private val backend: Backend,
+             private val globalContext: GlobalContextImpl) {
     fun update(duration: Double) {}
     fun handleEvent(event: Event) {}
     fun handleWindowResize(width: Int, height: Int) {
