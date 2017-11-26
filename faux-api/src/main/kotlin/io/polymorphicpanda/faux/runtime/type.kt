@@ -1,7 +1,5 @@
-package io.polymorphicpanda.faux.component
+package io.polymorphicpanda.faux.runtime
 
-import io.polymorphicpanda.faux.runtime.DeserializationContext
-import io.polymorphicpanda.faux.runtime.SerializationContext
 import kotlin.reflect.KMutableProperty1
 
 
