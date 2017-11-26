@@ -1,7 +1,6 @@
 package io.polymorphicpanda.faux.core.engine
 
 import io.polymorphicpanda.faux.blueprint.Blueprint
-import io.polymorphicpanda.faux.component.ComponentType
 import io.polymorphicpanda.faux.entity.Context
 import io.polymorphicpanda.faux.entity.Entity
 import io.polymorphicpanda.faux.entity.EntityEditor
@@ -14,7 +13,8 @@ import java.util.concurrent.ConcurrentHashMap
 
 class GlobalContextImpl(private val entityStorage: EntityStorage,
                         private val entityProvider: EntityProvider,
-                        private val componentMappings: Map<ComponentType, ComponentId>): GlobalContext {
+                        private val pools: ComponentPools,
+                        private val engineModel: EngineModel): GlobalContext {
     private val entityEditors = ConcurrentHashMap<Entity, EntityEditor>()
     private val systemContextMappings = mutableMapOf<SystemDescriptor<*>, SystemContextImpl>()
 
@@ -24,7 +24,7 @@ class GlobalContextImpl(private val entityStorage: EntityStorage,
 
     override fun manage(entity: Entity): EntityEditor {
         return entityEditors.computeIfAbsent(entity) {
-            EntityEditorImpl(entityStorage.manage(entity), componentMappings)
+            EntityEditorImpl(entityStorage.manage(entity), engineModel.componentMappings, pools)
         }
     }
 
@@ -40,10 +40,10 @@ class GlobalContextImpl(private val entityStorage: EntityStorage,
             val includedBitSet = MutableRoaringBitmap()
             val excludedBitSet = MutableRoaringBitmap()
             val aspect = descriptor.aspect
-            aspect.included.map { componentMappings.getValue(it) }
+            aspect.included.map { engineModel.componentMappings.getValue(it) }
                 .forEach { includedBitSet.add(it) }
 
-            aspect.excluded.map { componentMappings.getValue(it) }
+            aspect.excluded.map { engineModel.componentMappings.getValue(it) }
                 .forEach { excludedBitSet.add(it) }
 
             SystemContextImpl(this, includedBitSet, excludedBitSet)

@@ -5,6 +5,7 @@ import io.polymorphicpanda.faux.blueprint.Blueprint
 import io.polymorphicpanda.faux.blueprint.BlueprintDescriptor
 import io.polymorphicpanda.faux.component.Component
 import io.polymorphicpanda.faux.component.ComponentDescriptor
+import io.polymorphicpanda.faux.component.ComponentType
 import io.polymorphicpanda.faux.service.Service
 import io.polymorphicpanda.faux.service.ServiceDescriptor
 import io.polymorphicpanda.faux.state.StateDescriptor
@@ -28,7 +29,7 @@ class EngineSettings: EngineConfig {
     )
 
     private val systems = mutableMapOf<SystemDescriptor<*>, List<SystemDescriptor<*>>>()
-    private val components = mutableListOf<ComponentDescriptor<*>>()
+    private val components = mutableMapOf<ComponentType, ComponentDescriptor<*>>()
 
     override fun setWindowSize(width: Int, height: Int) {
         require(width > 0 && height > 0)
@@ -41,7 +42,7 @@ class EngineSettings: EngineConfig {
     }
 
     override fun <T: Component> registerComponent(descriptor: ComponentDescriptor<T>) {
-        components.add(descriptor)
+        components.put(descriptor.id, descriptor)
     }
 
     override fun <T: Blueprint> registerBlueprint(descriptor: BlueprintDescriptor<T>) {
@@ -61,5 +62,5 @@ class EngineSettings: EngineConfig {
     }
 
     fun getSystems(): Map<SystemDescriptor<*>, List<SystemDescriptor<*>>> = systems
-    fun getComponents(): List<ComponentDescriptor<*>> = components
+    fun getComponents(): Map<ComponentType, ComponentDescriptor<*>> = components
 }

@@ -33,7 +33,8 @@ class BasicEntityProvider: EntityProvider {
 }
 
 class EntityEditorImpl(private val entityStorageRef: EntityStorageRef,
-                       private val componentMappings: Map<ComponentType, ComponentId>): EntityEditor() {
+                       private val componentMappings: Map<ComponentType, ComponentId>,
+                       private val componentPools: ComponentPools): EntityEditor() {
     override val entity = entityStorageRef.entity
 
     override fun <T: Component> get(componentType: KClass<T>): T {
@@ -44,13 +45,18 @@ class EntityEditorImpl(private val entityStorageRef: EntityStorageRef,
         return entityStorageRef.contains(componentMappings.getValue(componentType))
     }
 
-    override fun <T: Component> add(component: T): EntityEditor {
-        entityStorageRef.add(componentMappings.getValue(component::class), component)
+    override fun <T: Component> add(componentType: KClass<T>, block: (T) -> Unit): EntityEditor {
+        val componentId = componentMappings.getValue(componentType)
+        val pool = componentPools.poolFor(componentType) as ComponentPool<T>
+        entityStorageRef.add(componentId, pool.acquire())
         return this
     }
 
     override fun <T: Component> remove(componentType: KClass<T>): EntityEditor {
-        entityStorageRef.remove(componentMappings.getValue(componentType))
+        val pool = componentPools.poolFor(componentType) as ComponentPool<T>
+        entityStorageRef.remove(componentMappings.getValue(componentType))?.let {
+            pool.release(it as T)
+        }
         return this
     }
 
@@ -66,7 +72,7 @@ interface EntityStorageRef {
     fun add(componentId: ComponentId, component: Component)
     fun <T: Component> get(componentId: ComponentId): T
     fun contains(componentId: ComponentId) = bitSet.contains(componentId)
-    fun remove(componentId: ComponentId)
+    fun remove(componentId: ComponentId): Component?
     fun release()
     fun isValid(): Boolean
 }
@@ -109,12 +115,12 @@ class EntityStorage {
                 @Suppress("UNCHECKED_CAST")
                 override fun <T: Component> get(componentId: ComponentId): T = components[componentId] as T
 
-                override fun remove(componentId: ComponentId) {
-                    components.remove(componentId)?.let {
+                override fun remove(componentId: ComponentId): Component? {
+                    return components.remove(componentId)?.let {
                         markDirty {
-                            it.detached()
                             index.remove(componentId)
                         }
+                        it
                     }
                 }
 
