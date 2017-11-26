@@ -1,8 +1,30 @@
 apply plugin: 'kotlin-platform-jvm'
+apply plugin: 'org.junit.platform.gradle.plugin'
+
+junitPlatform {
+    filters {
+        engines {
+            include 'spek'
+        }
+    }
+}
 
 kotlin { experimental { coroutines 'enable' } }
 
 dependencies {
     compile 'org.jetbrains.kotlin:kotlin-stdlib-jdk8'
     compile 'org.jetbrains.kotlinx:kotlinx-coroutines-core'
+
+    runtime 'org.jetbrains.kotlin:kotlin-reflect'
 }
+
+dependencies {
+    testImplementation 'com.nhaarman:mockito-kotlin'
+    testImplementation 'com.natpryce:hamkrest'
+    testImplementation 'org.jetbrains.spek:spek-api'
+    testImplementation 'org.jetbrains.spek:spek-subject-extension'
+
+    testRuntime 'org.junit.platform:junit-platform-launcher'
+    testRuntime 'org.jetbrains.spek:spek-junit-platform-engine'
+}
+

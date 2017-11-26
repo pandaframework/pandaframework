@@ -5,7 +5,7 @@ import kotlin.reflect.KClass
 
 typealias ComponentType = KClass<out Component>
 interface Component {
-    fun detached()
+    fun detached() { }
 }
 
 interface ComponentDescriptor<T: Component>: Descriptor<T>

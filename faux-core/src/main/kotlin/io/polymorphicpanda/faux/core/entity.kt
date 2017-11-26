@@ -76,9 +76,13 @@ class EntityStorage {
     private val references = mutableMapOf<Entity, EntityStorageRef>()
     private val dirtySet = ConcurrentHashMap<EntityStorageRef, MutableList<() -> Unit>>()
 
+    /**
+     * any changes to the component composition will not be visible until this method
+     * is invoked.
+     */
     fun resolve(dirty: (EntityStorageRef) -> Unit) {
          dirtySet.forEach { (ref, actions) ->
-            actions.forEach { it() }
+             actions.forEach { it() }
              dirty(ref)
          }
         dirtySet.clear()
