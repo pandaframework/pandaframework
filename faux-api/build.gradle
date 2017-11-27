@@ -1,2 +1,5 @@
 apply from: "$rootDir/gradle/common/kotlin-jvm.gradle"
 
+dependencies {
+    compile 'org.joml:joml'
+}

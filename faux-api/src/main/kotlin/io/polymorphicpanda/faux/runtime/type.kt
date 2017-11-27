@@ -100,6 +100,14 @@ class FCompoundTypePropertyBuilder<T: Any>(private val name: String,
         return this
     }
 
+    fun <K: Any> property(type: FType<K>, handler: KMutableProperty1<T, K>) = property(handler.name, type, handler)
+    fun intProperty(handler: KMutableProperty1<T, Int>) = property(FInt, handler)
+    fun floatProperty(handler: KMutableProperty1<T, Float>) = property(FFloat, handler)
+    fun doubleProperty(handler: KMutableProperty1<T, Double>) = property(FDouble, handler)
+    fun stringProperty(handler: KMutableProperty1<T, String>) = property(FString, handler)
+    fun booleanProperty(handler: KMutableProperty1<T, Boolean>) = property(FBoolean, handler)
+    inline fun <reified K: Enum<K>> enumProperty(handler: KMutableProperty1<T, K>) = property(fEnumType(), handler)
+
     fun build(): FCompoundType<T> {
         return FCompoundType(name, properties, factory)
     }
