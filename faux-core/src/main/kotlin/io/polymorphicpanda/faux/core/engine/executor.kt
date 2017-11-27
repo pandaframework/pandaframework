@@ -31,10 +31,9 @@ class SystemExecutor {
                 val jobs = mutableListOf<Deferred<System>>()
                 for (system in freeNodes) {
                     jobs += async (coroutineContext) {
-                        with(system) {
-                            this@async.process(duration, contextProvider(system))
+                        system.apply {
+                            process(duration, contextProvider(system))
                         }
-                        system
                     }
                 }
 
