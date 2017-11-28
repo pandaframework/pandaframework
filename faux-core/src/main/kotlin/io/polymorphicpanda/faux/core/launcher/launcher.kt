@@ -11,6 +11,7 @@ import io.polymorphicpanda.faux.core.engine.GlobalContextImpl
 import io.polymorphicpanda.faux.core.engine.SystemExecutor
 import io.polymorphicpanda.faux.core.window.Window
 import io.polymorphicpanda.faux.core.window.WindowFactory
+import io.polymorphicpanda.faux.runtime.Faux
 import kotlinx.coroutines.experimental.CommonPool
 
 abstract class EngineConfigurer {
@@ -59,7 +60,7 @@ class Launcher(val configurer: EngineConfigurer) {
         application.init(settings)
         engine = configurer.configure(settings)
         window = WindowFactory.create(settings.windowConfig, engine)
-
+        Faux.peer = engine
         window.init()
         loop()
         window.dispose()

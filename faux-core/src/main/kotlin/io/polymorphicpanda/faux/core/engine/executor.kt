@@ -31,9 +31,7 @@ class SystemExecutor {
                 val jobs = mutableListOf<Deferred<System>>()
                 for (system in freeNodes) {
                     jobs += async (coroutineContext) {
-                        system.apply {
-                            process(duration, contextProvider(system))
-                        }
+                        system.apply { process(duration, contextProvider(system)) }
                     }
                 }
 
@@ -49,7 +47,7 @@ class SystemExecutor {
     }
 }
 private open class BaseSystem: System() {
-    override suspend fun CoroutineScope.process(duration: Double, context: SystemContext) {
+    override suspend fun process(duration: Double, context: SystemContext) {
         delay(100)
         println("${Thread.currentThread().name}: Executing ${this@BaseSystem::class.simpleName} ")
     }
