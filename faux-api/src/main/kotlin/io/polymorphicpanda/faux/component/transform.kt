@@ -1,11 +1,9 @@
 package io.polymorphicpanda.faux.component
 
+import com.sun.javafx.geom.Vec3f
 import io.polymorphicpanda.faux.runtime.FCompoundType
 import io.polymorphicpanda.faux.runtime.FCompoundTypePropertyBuilder
 import io.polymorphicpanda.faux.runtime.fType
-import org.joml.Vector3f
-
-typealias Vec3f = Vector3f
 
 val FVec3 = fType("Vec3f", ::Vec3f)
     .floatProperty(Vec3f::x)
