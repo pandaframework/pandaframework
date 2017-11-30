@@ -1,5 +1,7 @@
 package io.polymorphicpanda.faux.runtime
 
+import io.polymorphicpanda.faux.math.Vec3f
+import io.polymorphicpanda.faux.math.Vec4f
 import kotlin.reflect.KMutableProperty1
 
 abstract class FType<T: Any>(val constraint: Constraint<T>? = null) {

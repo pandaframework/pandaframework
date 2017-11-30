@@ -28,8 +28,14 @@ class EngineSettings: EngineConfig {
         DEFAULT_TITLE
     )
 
+    private var developmentMode: Boolean = false
+
     private val systems = mutableMapOf<SystemDescriptor<*>, List<SystemDescriptor<*>>>()
     private val components = mutableMapOf<ComponentType, ComponentDescriptor<*>>()
+
+    override fun setDevelopmentMode(active: Boolean) {
+        developmentMode = active
+    }
 
     override fun setWindowSize(width: Int, height: Int) {
         require(width > 0 && height > 0)
@@ -63,4 +69,5 @@ class EngineSettings: EngineConfig {
 
     fun getSystems(): Map<SystemDescriptor<*>, List<SystemDescriptor<*>>> = systems
     fun getComponents(): Map<ComponentType, ComponentDescriptor<*>> = components
+    fun isDevelopmentMode() = developmentMode
 }

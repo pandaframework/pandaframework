@@ -1,26 +1,20 @@
 package io.polymorphicpanda.faux.component
 
+import io.polymorphicpanda.faux.math.Vec3f
+import io.polymorphicpanda.faux.math.vec3fProperty
 import io.polymorphicpanda.faux.runtime.FCompoundType
 import io.polymorphicpanda.faux.runtime.FCompoundTypePropertyBuilder
-import io.polymorphicpanda.faux.runtime.fType
-import io.polymorphicpanda.faux.util.Vec3f
-
-val FVec3 = fType("Vec3f", ::Vec3f)
-    .floatProperty(Vec3f::x)
-    .floatProperty(Vec3f::y)
-    .floatProperty(Vec3f::z)
-    .build()
 
 data class Transform(
     var position: Vec3f,
     var rotation: Vec3f,
     var scale: Vec3f
 ): Component {
-    companion object: ComponentDescriptor<Transform>() {
+    companion object Descriptor: ComponentDescriptor<Transform>() {
         override fun buildType(builder: FCompoundTypePropertyBuilder<Transform>): FCompoundType<Transform> {
-            return builder.property(FVec3, Transform::position)
-                .property(FVec3, Transform::rotation)
-                .property(FVec3, Transform::scale)
+            return builder.vec3fProperty(Transform::position)
+                .vec3fProperty(Transform::rotation)
+                .vec3fProperty(Transform::scale)
                 .build()
         }
 

@@ -10,6 +10,7 @@ import io.polymorphicpanda.faux.state.StateDescriptor
 import io.polymorphicpanda.faux.system.SystemDescriptor
 
 interface EngineConfig {
+    fun setDevelopmentMode(active: Boolean)
     fun setWindowSize(width: Int, height: Int)
     fun setWindowTitle(title: String)
 

@@ -24,7 +24,7 @@ class SampleSystem: System() {
 
 class Sample: Application {
     override fun init(config: EngineConfig) {
-        super.init(config)
+        config.setDevelopmentMode(true)
         config.setWindowTitle("Sample Application")
         config.registerSystem(SampleSystem.Descriptor)
     }
