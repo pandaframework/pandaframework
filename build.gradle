@@ -2,9 +2,6 @@ import org.gradle.internal.os.OperatingSystem
 
 buildscript {
     repositories {
-        maven {
-            url 'https://dl.bintray.com/kotlin/kotlin-eap-1.2'
-        }
         jcenter()
     }
 
@@ -31,9 +28,6 @@ subprojects {
     apply plugin: 'io.spring.dependency-management'
 
     repositories {
-        maven {
-            url 'https://dl.bintray.com/kotlin/kotlin-eap-1.2'
-        }
         jcenter()
     }
 

@@ -1,9 +1,9 @@
 package io.polymorphicpanda.faux.component
 
-import com.sun.javafx.geom.Vec3f
 import io.polymorphicpanda.faux.runtime.FCompoundType
 import io.polymorphicpanda.faux.runtime.FCompoundTypePropertyBuilder
 import io.polymorphicpanda.faux.runtime.fType
+import io.polymorphicpanda.faux.util.Vec3f
 
 val FVec3 = fType("Vec3f", ::Vec3f)
     .floatProperty(Vec3f::x)
@@ -26,6 +26,5 @@ data class Transform(
 
         override val id = Transform::class
         override fun create() = Transform(Vec3f(), Vec3f(), Vec3f())
-
     }
 }
