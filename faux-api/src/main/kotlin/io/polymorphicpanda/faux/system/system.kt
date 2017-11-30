@@ -29,5 +29,5 @@ abstract class System {
 }
 
 interface SystemDescriptor<T: System>: Descriptor<T> {
-    abstract val aspect: Aspect
+    val aspect: Aspect
 }

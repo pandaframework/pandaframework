@@ -9,9 +9,12 @@ import io.polymorphicpanda.faux.core.engine.Engine
 import io.polymorphicpanda.faux.core.engine.EngineExecutionModel
 import io.polymorphicpanda.faux.core.engine.EntityStorage
 import io.polymorphicpanda.faux.core.engine.GlobalContextImpl
+import io.polymorphicpanda.faux.core.service.ServiceManager
 import io.polymorphicpanda.faux.core.window.Window
 import io.polymorphicpanda.faux.core.window.WindowFactory
+import io.polymorphicpanda.faux.input.InputManager
 import io.polymorphicpanda.faux.runtime.Faux
+import io.polymorphicpanda.faux.service.ServiceDescriptor
 import mu.KotlinLogging
 
 open class Launcher {
@@ -27,7 +30,7 @@ open class Launcher {
         try {
             val application = ApplicationLoader().load()
             logger.info { "Bootstrapping engine." }
-            registerStandardSettings(settings)
+            registerBuiltinTypes(settings)
             application.init(settings)
             val executionModel = getExecutionModel(settings)
 
@@ -44,11 +47,18 @@ open class Launcher {
                 }
             }
 
-            engine = createEngine(executionModel)
+            val serviceManager = ServiceManager()
+            engine = createEngine(executionModel, serviceManager)
+
             logger.info { "Setting up window." }
             window = WindowFactory.create(settings.windowConfig, engine)
-            Faux.peer = engine
+
+            logger.info { "Registering systems." }
+            registerBuiltinServices(serviceManager, window)
+            settings.getServices().forEach { serviceManager.registerService(it) }
+
             logger.info { "Initializing peer." }
+            Faux.peer = engine
             window.init()
             logger.info { "Done!" }
             loop()
@@ -63,11 +73,21 @@ open class Launcher {
         return EngineExecutionModel.from(settings)
     }
 
-    private fun registerStandardSettings(settings: EngineSettings) {
+    private fun registerBuiltinTypes(settings: EngineSettings) {
         settings.registerComponent(Transform.Descriptor)
     }
 
-    private fun createEngine(executionModel: EngineExecutionModel): Engine {
+    private fun registerBuiltinServices(serviceManager: ServiceManager, window: Window) {
+        val inputManagerDescriptor = object: ServiceDescriptor<InputManager> {
+            override val id = InputManager::class
+            override fun create() = window
+        }
+
+        serviceManager.registerService(inputManagerDescriptor)
+    }
+
+    private fun createEngine(executionModel: EngineExecutionModel,
+                             serviceManager: ServiceManager): Engine {
         val entityStorage = EntityStorage()
 
         val globalContext = GlobalContextImpl(
@@ -80,7 +100,8 @@ open class Launcher {
         logger.info { "Using '${executionModel.graphics.name}' gfx backend." }
         return Engine(
             globalContext,
-            executionModel
+            executionModel,
+            serviceManager
         )
     }
 

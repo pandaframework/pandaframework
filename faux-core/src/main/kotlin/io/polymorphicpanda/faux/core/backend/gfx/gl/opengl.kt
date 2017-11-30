@@ -8,7 +8,6 @@ import org.lwjgl.opengl.GL11
 
 class OpenGlRenderSystem: GfxRenderSystem() {
     suspend override fun process(duration: Double, context: SystemContext) {
-        println("Rendering frame ...")
     }
 
     companion object Descriptor: GfxRenderer<OpenGlRenderSystem>() {

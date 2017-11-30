@@ -2,14 +2,119 @@ package io.polymorphicpanda.faux.math
 
 import io.polymorphicpanda.faux.runtime.FCompoundTypePropertyBuilder
 import io.polymorphicpanda.faux.runtime.fType
+import org.joml.Vector2f
 import org.joml.Vector3f
 import org.joml.Vector4f
 import java.nio.ByteBuffer
 import java.nio.FloatBuffer
 import kotlin.reflect.KMutableProperty1
 
+class Vec2f private constructor(private val internal: Vector2f) {
+    constructor(): this(Vector2f())
+    constructor(x: Float, y: Float): this(Vector2f(x, y))
+
+    var x: Float
+        get() = internal.x
+        set(value) {
+            internal.x = value
+        }
+
+    var y: Float
+        get() = internal.y
+        set(value) {
+            internal.y = value
+        }
+
+
+    operator fun plus(other: Vec2f): Vec2f {
+        val result = Vector2f()
+        internal.add(other.internal, result)
+        return Vec2f(result)
+    }
+
+    operator fun minus(other: Vec2f): Vec2f {
+        val result = Vector2f()
+        internal.sub(other.internal, result)
+        return Vec2f(result)
+    }
+
+    operator fun times(scalar: Float): Vec2f {
+        val result = Vector2f()
+        internal.mul(scalar, result)
+        return Vec2f(result)
+    }
+
+    operator fun unaryMinus(): Vec2f {
+        val result = Vector2f()
+        internal.negate(result)
+        return Vec2f(result)
+    }
+
+    operator fun plusAssign(other: Vec2f) {
+        internal.add(other.internal)
+    }
+
+    operator fun minusAssign(other: Vec2f) {
+        internal.sub(other.internal)
+    }
+
+    operator fun timesAssign(other: Vec2f) {
+        internal.mul(other.internal)
+    }
+
+    fun length() = internal.length()
+    fun lengthSquared() = internal.lengthSquared()
+
+    /**
+     * Normalize this vector.
+     * @see [normalized]
+     */
+    fun normalize() {
+        internal.normalize()
+    }
+
+    /**
+     * Return a normalized version of this vector, without
+     * mutating this.
+     * @see [normalize]
+     */
+    fun normalized(): Vec2f {
+        val result = Vector2f()
+        internal.normalize(result)
+        return Vec2f(result)
+    }
+
+    fun store(buffer: ByteBuffer, index: Int = 0) {
+        internal.get(index, buffer)
+    }
+
+    fun store(buffer: FloatBuffer, index: Int = 0) {
+        internal.get(index, buffer)
+    }
+
+    companion object {
+        fun from(buffer: FloatBuffer, index: Int = 0): Vec2f {
+            val dest = Vector2f()
+            dest.set(index, buffer)
+            return Vec2f(dest)
+        }
+
+        fun from(buffer: ByteBuffer, index: Int = 0): Vec2f {
+            val dest = Vector2f()
+            dest.set(index, buffer)
+            return Vec2f(dest)
+        }
+
+        val FType = fType("Vec2f", ::Vec2f)
+            .floatProperty(Vec2f::x)
+            .floatProperty(Vec2f::y)
+            .build()
+    }
+}
+
 class Vec3f private constructor(private val internal: Vector3f) {
     constructor(): this(Vector3f())
+    constructor(x: Float, y: Float, z: Float): this(Vector3f(x, y, z))
 
     var x: Float
         get() = internal.x
@@ -128,6 +233,7 @@ class Vec3f private constructor(private val internal: Vector3f) {
 
 class Vec4f private constructor(private val internal: Vector4f) {
     constructor(): this(Vector4f())
+    constructor(x: Float, y: Float, z: Float, w: Float): this(Vector4f(x, y, z, w))
 
     var x: Float
         get() = internal.x
@@ -250,6 +356,9 @@ class Vec4f private constructor(private val internal: Vector4f) {
             .build()
     }
 }
+
+fun <T: Any> FCompoundTypePropertyBuilder<T>.vec2fProperty(handler: KMutableProperty1<T, Vec2f>)
+    = property(Vec2f.FType, handler)
 
 fun <T: Any> FCompoundTypePropertyBuilder<T>.vec3fProperty(handler: KMutableProperty1<T, Vec3f>)
     = property(Vec3f.FType, handler)

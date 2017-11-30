@@ -1,18 +1,23 @@
 package io.polymorphicpanda.faux.core.window
 
-import io.polymorphicpanda.faux.core.engine.Engine
 import io.polymorphicpanda.faux.core.config.WindowConfig
+import io.polymorphicpanda.faux.core.engine.Engine
 import io.polymorphicpanda.faux.core.util.NULL
 import io.polymorphicpanda.faux.event.Event
+import io.polymorphicpanda.faux.input.InputManager
+import io.polymorphicpanda.faux.input.MouseButton
 import io.polymorphicpanda.faux.runtime.FauxException
 import org.lwjgl.glfw.GLFW
+import org.lwjgl.glfw.GLFWCursorPosCallback
 import org.lwjgl.glfw.GLFWErrorCallback
 import org.lwjgl.glfw.GLFWFramebufferSizeCallback
+import org.lwjgl.glfw.GLFWMouseButtonCallback
 import org.lwjgl.glfw.GLFWWindowRefreshCallback
 import org.lwjgl.glfw.GLFWWindowSizeCallback
 import org.lwjgl.opengl.GL
 
-interface Window {
+interface Window: InputManager {
+    fun handle(): Long
     fun init()
     fun dispose()
     fun shouldClose(): Boolean
@@ -37,10 +42,17 @@ class GlfwWindow(private var width: Int,
                  private var title: String,
                  private val engine: Engine): Window {
     private var window: Long = NULL
+    private val eventMapper = GlfwEventMapper(engine::handleInput)
     private lateinit var refreshCallback: GLFWWindowRefreshCallback
-    private lateinit var framebufferResizeCallback: GLFWFramebufferSizeCallback
+    private lateinit var frameBufferResizeCallback: GLFWFramebufferSizeCallback
     private lateinit var resizeCallback: GLFWWindowSizeCallback
+    private lateinit var cursorPosCallback: GLFWCursorPosCallback
+    private lateinit var mouseButtonCallBack: GLFWMouseButtonCallback
     private val errorCallback = GLFWErrorCallback.createPrint(System.err)
+
+    override fun handle(): Long {
+        return window
+    }
 
     override fun init() {
         if (!GLFW.glfwInit()) {
@@ -58,23 +70,38 @@ class GlfwWindow(private var width: Int,
             flush()
         }
 
-        framebufferResizeCallback = GLFWFramebufferSizeCallback.create { _, width, height ->
+        frameBufferResizeCallback = GLFWFramebufferSizeCallback.create { _, width, height ->
             engine.handleFrameBufferResize(width, height)
         }
 
         resizeCallback = GLFWWindowSizeCallback.create { _, width, height -> engine.handleWindowResize(width, height) }
 
+        cursorPosCallback = GLFWCursorPosCallback.create {_, x, y -> eventMapper.mouseMove(x, y) }
+        mouseButtonCallBack = GLFWMouseButtonCallback.create {_, button, action, mods ->
+            val x = DoubleArray(1)
+            val y = DoubleArray(1)
+
+            GLFW.glfwGetCursorPos(window, x, y)
+
+            eventMapper.mouseButton(x[0], y[0], button, action, mods)
+        }
+
         GLFW.glfwSetWindowRefreshCallback(window, refreshCallback)
-        GLFW.glfwSetFramebufferSizeCallback(window, framebufferResizeCallback)
+        GLFW.glfwSetFramebufferSizeCallback(window, frameBufferResizeCallback)
+        GLFW.glfwSetCursorPosCallback(window, cursorPosCallback)
+        GLFW.glfwSetMouseButtonCallback(window, mouseButtonCallBack)
         GLFW.glfwMakeContextCurrent(window)
 
         GL.createCapabilities(true)
     }
 
     override fun dispose() {
+        errorCallback.free()
         refreshCallback.free()
-        framebufferResizeCallback.free()
+        frameBufferResizeCallback.free()
         resizeCallback.free()
+        cursorPosCallback.free()
+        mouseButtonCallBack.free()
         GLFW.glfwTerminate()
     }
 
@@ -86,5 +113,18 @@ class GlfwWindow(private var width: Int,
 
     override fun pollEvents() {
         GLFW.glfwPollEvents()
+    }
+
+    override fun getMousePosition(): Pair<Double, Double> {
+        val x = DoubleArray(1)
+        val y = DoubleArray(1)
+
+        GLFW.glfwGetCursorPos(window, x, y)
+
+        return x[0] to y[0]
+    }
+
+    override fun isMouseButtonPressed(button: MouseButton): Boolean {
+        return GLFW.glfwGetMouseButton(window, fromMouseButton(button)) == GLFW.GLFW_PRESS
     }
 }

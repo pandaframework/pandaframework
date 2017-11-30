@@ -6,13 +6,10 @@ import io.polymorphicpanda.faux.system.System
 import io.polymorphicpanda.faux.system.SystemContext
 import io.polymorphicpanda.faux.system.SystemDescriptor
 import io.polymorphicpanda.faux.system.aspects
-import kotlinx.coroutines.experimental.delay
 
 
 class SampleSystem: System() {
     suspend override fun process(duration: Double, context: SystemContext) {
-        println("Faking some work.")
-        delay(100)
     }
 
     companion object Descriptor: SystemDescriptor<SampleSystem> {

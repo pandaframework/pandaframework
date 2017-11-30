@@ -18,6 +18,5 @@ object Faux {
 
     val sharedPool: CoroutineContext
         get() = peer.getSharedPool()
-
     inline fun <reified T: Service> getService(): T = peer.getService(T::class)
 }

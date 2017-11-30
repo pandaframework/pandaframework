@@ -32,6 +32,7 @@ class EngineSettings: EngineConfig {
 
     private val systems = mutableMapOf<SystemDescriptor<*>, List<SystemDescriptor<*>>>()
     private val components = mutableMapOf<ComponentType, ComponentDescriptor<*>>()
+    private val services = mutableListOf<ServiceDescriptor<out Service>>()
 
     override fun setDevelopmentMode(active: Boolean) {
         developmentMode = active
@@ -56,7 +57,7 @@ class EngineSettings: EngineConfig {
     }
 
     override fun <T: Service> registerService(descriptor: ServiceDescriptor<T>) {
-        TODO()
+        services.add(descriptor)
     }
 
     override fun registerSystem(descriptor: SystemDescriptor<*>, dependencies: List<SystemDescriptor<*>>) {
@@ -67,6 +68,7 @@ class EngineSettings: EngineConfig {
         TODO()
     }
 
+    fun getServices(): List<ServiceDescriptor<out Service>> = services
     fun getSystems(): Map<SystemDescriptor<*>, List<SystemDescriptor<*>>> = systems
     fun getComponents(): Map<ComponentType, ComponentDescriptor<*>> = components
     fun isDevelopmentMode() = developmentMode

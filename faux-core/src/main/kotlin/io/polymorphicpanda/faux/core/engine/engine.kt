@@ -1,5 +1,6 @@
 package io.polymorphicpanda.faux.core.engine
 
+import io.polymorphicpanda.faux.core.service.ServiceManager
 import io.polymorphicpanda.faux.core.util.DynamicGraph
 import io.polymorphicpanda.faux.core.window.WindowEventHandler
 import io.polymorphicpanda.faux.event.Event
@@ -8,11 +9,14 @@ import io.polymorphicpanda.faux.service.Service
 import io.polymorphicpanda.faux.system.System
 import io.polymorphicpanda.faux.system.SystemContext
 import io.polymorphicpanda.faux.system.SystemDescriptor
+import mu.KotlinLogging
 import kotlin.reflect.KClass
 
 
 class Engine(private val globalContext: GlobalContextImpl,
-             private val executionModel: EngineExecutionModel): EnginePeer, WindowEventHandler {
+             private val executionModel: EngineExecutionModel,
+             private val serviceManager: ServiceManager): EnginePeer, WindowEventHandler {
+    private val logger = KotlinLogging.logger {}
 
     private val backend = executionModel.graphics
     private val coroutineContext = executionModel.coroutineContext
@@ -27,7 +31,10 @@ class Engine(private val globalContext: GlobalContextImpl,
         systemExecutor.execute(coroutineContext, duration, executionGraph.clone())
     }
 
-    override fun handleInput(event: Event) { }
+    override fun handleInput(event: Event) {
+        // TODO: pass event to state
+    }
+
     override fun handleWindowResize(width: Int, height: Int) {
         backend.handleWindowResize(width, height)
     }
@@ -37,7 +44,7 @@ class Engine(private val globalContext: GlobalContextImpl,
     }
 
     override fun <T: Service> getService(service: KClass<T>): T {
-        TODO()
+        return serviceManager.getService(service)
     }
 
     override fun getSharedPool() = coroutineContext
