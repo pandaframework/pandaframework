@@ -21,13 +21,10 @@ class SystemExecutor {
                 for (pair in freeNodes) {
                     val (system, context) = pair
                     jobs += async (coroutineContext) {
-                        val timerContext = StatsHandler.systemTimer(system).time()
-                        try {
+                        StatsHandler.systemTime(system) {
                             system.process(duration, context)
-                            pair
-                        } finally {
-                            timerContext.stop()
                         }
+                        pair
                     }
                 }
 

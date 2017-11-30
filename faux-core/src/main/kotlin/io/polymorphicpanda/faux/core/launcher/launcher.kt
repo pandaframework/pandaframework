@@ -1,6 +1,5 @@
 package io.polymorphicpanda.faux.core.launcher
 
-import com.codahale.metrics.JmxReporter
 import io.polymorphicpanda.faux.component.Transform
 import io.polymorphicpanda.faux.core.config.EngineSettings
 import io.polymorphicpanda.faux.core.debug.StatsHandler
@@ -14,8 +13,6 @@ import io.polymorphicpanda.faux.core.window.Window
 import io.polymorphicpanda.faux.core.window.WindowFactory
 import io.polymorphicpanda.faux.runtime.Faux
 import mu.KotlinLogging
-import java.util.concurrent.TimeUnit
-import kotlin.math.log
 
 open class Launcher {
     private val logger = KotlinLogging.logger {}
@@ -23,21 +20,21 @@ open class Launcher {
     private lateinit var window: Window
     private lateinit var engine: Engine
     private val clock: Clock = GlfwClock()
-    private val statsReporter = JmxReporter.forRegistry(StatsHandler)
-        .convertDurationsTo(TimeUnit.MILLISECONDS)
-        .build()
+
 
     fun launch(args: Array<String>) {
         val settings = EngineSettings()
-        val application = ApplicationLoader().load()
         try {
+            val application = ApplicationLoader().load()
             logger.info { "Bootstrapping engine." }
             registerStandardSettings(settings)
             application.init(settings)
             val executionModel = getExecutionModel(settings)
 
             if (settings.isDevelopmentMode()) {
+                StatsHandler.setEnabled(true)
                 logger.info { "Development mode is true." }
+                logger.info { "Stats tracking enabled." }
                 logger.info {
                     "Registered components: ${executionModel.componentMappings.keys.map { it.qualifiedName }}"
                 }
@@ -53,10 +50,6 @@ open class Launcher {
             Faux.peer = engine
             logger.info { "Initializing peer." }
             window.init()
-            if (settings.isDevelopmentMode()) {
-                logger.info { "Starting stats reporter." }
-                statsReporter.start()
-            }
             logger.info { "Done!" }
             loop()
             logger.info { "Cleaning up." }
@@ -94,7 +87,7 @@ open class Launcher {
     private fun loop() {
         var lastUpdate = clock.getTime()
         while (!window.shouldClose()) {
-            StatsHandler.frameTimer.time {
+            StatsHandler.frameTime {
                 window.pollEvents()
 
                 engine.update(clock.getTime() - lastUpdate)

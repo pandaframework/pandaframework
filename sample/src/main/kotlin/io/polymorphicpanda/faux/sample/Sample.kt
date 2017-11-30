@@ -11,7 +11,8 @@ import kotlinx.coroutines.experimental.delay
 
 class SampleSystem: System() {
     suspend override fun process(duration: Double, context: SystemContext) {
-        delay(400)
+        println("Faking some work.")
+        delay(100)
     }
 
     companion object Descriptor: SystemDescriptor<SampleSystem> {
