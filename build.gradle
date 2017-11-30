@@ -46,9 +46,13 @@ subprojects {
             }
 
             dependencySet(group: 'org.lwjgl', version: lwjglVersion) {
-                entry "lwjgl"
-                entry "lwjgl-glfw"
-                entry "lwjgl-opengl"
+                entry 'lwjgl'
+                entry 'lwjgl-glfw'
+                entry 'lwjgl-opengl'
+            }
+
+            dependencySet(group: 'io.dropwizard.metrics', version: '3.2.5') {
+                entry 'metrics-core'
             }
 
             dependency 'org.joml:joml:1.9.6'

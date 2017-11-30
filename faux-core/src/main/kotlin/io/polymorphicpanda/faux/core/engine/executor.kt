@@ -1,5 +1,6 @@
 package io.polymorphicpanda.faux.core.engine
 
+import io.polymorphicpanda.faux.core.debug.StatsHandler
 import io.polymorphicpanda.faux.core.util.DynamicGraph
 import io.polymorphicpanda.faux.system.System
 import io.polymorphicpanda.faux.system.SystemContext
@@ -20,8 +21,13 @@ class SystemExecutor {
                 for (pair in freeNodes) {
                     val (system, context) = pair
                     jobs += async (coroutineContext) {
-                        system.process(duration, context)
-                        pair
+                        val timerContext = StatsHandler.systemTimer(system).time()
+                        try {
+                            system.process(duration, context)
+                            pair
+                        } finally {
+                            timerContext.stop()
+                        }
                     }
                 }
 
