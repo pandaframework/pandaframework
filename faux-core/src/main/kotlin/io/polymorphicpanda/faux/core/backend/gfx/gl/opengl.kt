@@ -18,6 +18,8 @@ class OpenGlRenderSystem: GfxRenderSystem() {
 
 
 class OpenGlGfxBackend: GfxBackend {
+    override val name = "OpenGL"
+
     override fun handleWindowResize(width: Int, height: Int) { }
 
     override fun handleFrameBufferResize(width: Int, height: Int) {

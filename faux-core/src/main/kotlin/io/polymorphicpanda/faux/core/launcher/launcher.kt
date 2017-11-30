@@ -12,9 +12,12 @@ import io.polymorphicpanda.faux.core.engine.GlobalContextImpl
 import io.polymorphicpanda.faux.core.window.Window
 import io.polymorphicpanda.faux.core.window.WindowFactory
 import io.polymorphicpanda.faux.runtime.Faux
+import mu.KotlinLogging
 import java.util.concurrent.TimeUnit
 
 open class Launcher {
+    private val logger = KotlinLogging.logger {}
+
     private lateinit var window: Window
     private lateinit var engine: Engine
     private val clock: Clock = GlfwClock()
@@ -25,15 +28,24 @@ open class Launcher {
     fun launch(args: Array<String>) {
         val settings = EngineSettings()
         val application = ApplicationLoader().load()
-        application.init(settings)
-        val executionModel = getExecutionModel(settings)
-        engine = createEngine(executionModel)
-        window = WindowFactory.create(settings.windowConfig, engine)
-        Faux.peer = engine
-        window.init()
-        statsReporter.start()
-        loop()
-        window.dispose()
+        try {
+            logger.info { "Bootstrapping engine." }
+            application.init(settings)
+            val executionModel = getExecutionModel(settings)
+            engine = createEngine(executionModel)
+            logger.info { "Setting up window." }
+            window = WindowFactory.create(settings.windowConfig, engine)
+            Faux.peer = engine
+            logger.info { "Initializing peer." }
+            window.init()
+            statsReporter.start()
+            logger.info { "Done!" }
+            loop()
+            logger.info { "Cleaning up." }
+            window.dispose()
+        } catch (e: Throwable) {
+            logger.error(e) { "An error has occurred." }
+        }
     }
 
     protected open fun getExecutionModel(settings: EngineSettings): EngineExecutionModel {
@@ -50,6 +62,7 @@ open class Launcher {
             executionModel
         )
 
+        logger.info { "Using '${executionModel.graphics.name}' gfx backend." }
         return Engine(
             globalContext,
             executionModel

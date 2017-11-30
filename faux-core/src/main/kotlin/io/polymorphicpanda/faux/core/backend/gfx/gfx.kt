@@ -5,9 +5,9 @@ import io.polymorphicpanda.faux.system.SystemDescriptor
 import io.polymorphicpanda.faux.system.aspects
 
 interface GfxBackend {
+    val name: String
     fun handleWindowResize(width: Int, height: Int)
     fun handleFrameBufferResize(width: Int, height: Int)
-
     fun getRenderer(): GfxRenderer<out GfxRenderSystem>
 }
 
