@@ -16,7 +16,7 @@ interface EngineConfig {
     fun <T: Component> registerComponent(descriptor: ComponentDescriptor<T>)
     fun <T: Blueprint> registerBlueprint(descriptor: BlueprintDescriptor<T>)
     fun <T: Service> registerService(descriptor: ServiceDescriptor<T>)
-    fun registerSystem(descriptor: SystemDescriptor<*>, dependencies: List<SystemDescriptor<*>>)
+    fun registerSystem(descriptor: SystemDescriptor<*>, dependencies: List<SystemDescriptor<*>> = emptyList())
 
     fun setInitialState(state: StateDescriptor<*>)
 }

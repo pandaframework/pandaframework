@@ -3,6 +3,7 @@ package io.polymorphicpanda.faux.core.window
 import io.polymorphicpanda.faux.core.engine.Engine
 import io.polymorphicpanda.faux.core.config.WindowConfig
 import io.polymorphicpanda.faux.core.util.NULL
+import io.polymorphicpanda.faux.event.Event
 import io.polymorphicpanda.faux.runtime.FauxException
 import org.lwjgl.glfw.GLFW
 import org.lwjgl.glfw.GLFWErrorCallback
@@ -15,9 +16,14 @@ interface Window {
     fun init()
     fun dispose()
     fun shouldClose(): Boolean
-
     fun flush()
     fun pollEvents()
+}
+
+interface WindowEventHandler {
+    fun handleInput(event: Event)
+    fun handleFrameBufferResize(width: Int, height: Int)
+    fun handleWindowResize(width: Int, height: Int)
 }
 
 object WindowFactory {
@@ -53,7 +59,7 @@ class GlfwWindow(private var width: Int,
         }
 
         framebufferResizeCallback = GLFWFramebufferSizeCallback.create { _, width, height ->
-            engine.handleFramebufferResize(width, height)
+            engine.handleFrameBufferResize(width, height)
         }
 
         resizeCallback = GLFWWindowSizeCallback.create { _, width, height -> engine.handleWindowResize(width, height) }
@@ -68,6 +74,7 @@ class GlfwWindow(private var width: Int,
     override fun dispose() {
         refreshCallback.free()
         framebufferResizeCallback.free()
+        resizeCallback.free()
         GLFW.glfwTerminate()
     }
 

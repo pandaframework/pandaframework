@@ -2,12 +2,13 @@ package io.polymorphicpanda.faux.core.engine
 
 import io.polymorphicpanda.faux.component.ComponentDescriptor
 import io.polymorphicpanda.faux.component.ComponentType
+import io.polymorphicpanda.faux.core.backend.Backend
+import io.polymorphicpanda.faux.core.backend.OpenGlBackend
 import io.polymorphicpanda.faux.core.config.EngineSettings
-import io.polymorphicpanda.faux.core.util.DynamicGraph
-import io.polymorphicpanda.faux.system.System
 import io.polymorphicpanda.faux.system.SystemDescriptor
+import kotlinx.coroutines.experimental.CommonPool
 
-data class EngineModel(
+data class EngineExecutionModel(
     val components: Map<ComponentType, ComponentDescriptor<*>>,
     val systems: Map<SystemDescriptor<*>, List<SystemDescriptor<*>>>
 ) {
@@ -16,30 +17,14 @@ data class EngineModel(
         components.keys.associate { it to mapper.map(it) }
     }
 
-    private val systemInstanceMap = mutableMapOf<SystemDescriptor<*>, System>()
+    val graphics: Backend = OpenGlBackend()
 
-    val systemGraph = DynamicGraph<System>().apply {
-        systems.forEach { descriptor, dependencies ->
-            if (dependencies.isEmpty()) {
-                addNode(systemInstanceFor(descriptor))
-            } else {
-                dependencies.forEach {
-                    addEdge(systemInstanceFor(descriptor), systemInstanceFor(it))
-                }
-            }
-        }
-    }
+    val systemExecutor = SystemExecutor()
 
-    val systemInstances: Map<SystemDescriptor<*>, System> = systemInstanceMap
-
-    private fun systemInstanceFor(descriptor: SystemDescriptor<*>): System {
-        return systemInstanceMap.computeIfAbsent(descriptor) {
-            descriptor.create()
-        }
-    }
+    val coroutineContext = CommonPool
 
     companion object {
-        fun from(settings: EngineSettings) = EngineModel(
+        fun from(settings: EngineSettings) = EngineExecutionModel(
             settings.getComponents(),
             settings.getSystems()
         )
