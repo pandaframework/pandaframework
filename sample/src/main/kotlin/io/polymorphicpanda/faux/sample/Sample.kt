@@ -11,9 +11,7 @@ import kotlinx.coroutines.experimental.delay
 
 class SampleSystem: System() {
     suspend override fun process(duration: Double, context: SystemContext) {
-        val sleep = duration.toLong()
-        println("Sleeping for $sleep millis ...")
-        delay(sleep)
+        delay(400)
     }
 
     companion object Descriptor: SystemDescriptor<SampleSystem> {

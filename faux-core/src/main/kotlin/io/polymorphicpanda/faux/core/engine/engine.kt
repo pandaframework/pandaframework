@@ -54,6 +54,14 @@ class Engine(private val globalContext: GlobalContextImpl,
                     }
                 }
             }
+
+            // this should happen last
+            // add renderer that depends on everything
+            val renderSystem = systemInstanceFor(backend.getRenderer())
+            executionModel.systems.keys.forEach {
+                addEdge(renderSystem, systemInstanceFor(it))
+            }
+
         }
 
     }
