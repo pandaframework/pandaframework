@@ -8,6 +8,7 @@ import io.polymorphicpanda.faux.input.InputManager
 import io.polymorphicpanda.faux.input.Key
 import io.polymorphicpanda.faux.input.MouseButton
 import io.polymorphicpanda.faux.runtime.FauxException
+import kotlinx.coroutines.experimental.async
 import org.lwjgl.glfw.GLFW
 import org.lwjgl.glfw.GLFWCharCallback
 import org.lwjgl.glfw.GLFWCursorPosCallback
@@ -132,20 +133,26 @@ class GlfwWindow(private var width: Int,
         GLFW.glfwPollEvents()
     }
 
-    override fun getMousePosition(): Pair<Double, Double> {
-        val x = DoubleArray(1)
-        val y = DoubleArray(1)
+    override suspend fun getMousePosition(): Pair<Double, Double> {
+        return async(engine.getMainThread()) {
+            val x = DoubleArray(1)
+            val y = DoubleArray(1)
 
-        GLFW.glfwGetCursorPos(window, x, y)
+            GLFW.glfwGetCursorPos(window, x, y)
 
-        return x[0] to y[0]
+            x[0] to y[0]
+        }.await()
     }
 
-    override fun isMouseButtonPressed(button: MouseButton): Boolean {
-        return GLFW.glfwGetMouseButton(window, GlfwMouseButtonMapper.toPlatformType(button)) == GLFW.GLFW_PRESS
+    override suspend  fun isMouseButtonPressed(button: MouseButton): Boolean {
+        return async(engine.getMainThread()) {
+            GLFW.glfwGetMouseButton(window, GlfwMouseButtonMapper.toPlatformType(button)) == GLFW.GLFW_PRESS
+        }.await()
     }
 
-    override fun isKeyPressed(key: Key): Boolean {
-        return GLFW.glfwGetKey(window, GlfwKeyMapper.toPlatformType(key)) == GLFW.GLFW_PRESS
+    override suspend fun isKeyPressed(key: Key): Boolean {
+        return async(engine.getMainThread()) {
+            GLFW.glfwGetKey(window, GlfwKeyMapper.toPlatformType(key)) == GLFW.GLFW_PRESS
+        }.await()
     }
 }

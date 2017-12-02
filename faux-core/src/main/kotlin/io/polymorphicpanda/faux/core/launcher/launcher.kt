@@ -15,7 +15,9 @@ import io.polymorphicpanda.faux.core.window.WindowFactory
 import io.polymorphicpanda.faux.input.InputManager
 import io.polymorphicpanda.faux.runtime.Faux
 import io.polymorphicpanda.faux.service.ServiceDescriptor
+import kotlinx.coroutines.experimental.runBlocking
 import mu.KotlinLogging
+import kotlin.coroutines.experimental.CoroutineContext
 
 open class Launcher {
     private val logger = KotlinLogging.logger {}
@@ -26,51 +28,55 @@ open class Launcher {
 
 
     fun launch(args: Array<String>) {
-        val settings = EngineSettings()
-        try {
-            val application = ApplicationLoader().load()
-            logger.info { "Bootstrapping engine." }
-            registerBuiltinTypes(settings)
-            application.init(settings)
-            val executionModel = getExecutionModel(settings)
+        runBlocking {
+            val settings = EngineSettings()
 
-            if (settings.isDevelopmentMode()) {
-                StatsHandler.setEnabled(true)
-                logger.info { "Development mode is true." }
-                logger.info { "Stats tracking enabled." }
-                logger.info {
-                    "Registered components: ${executionModel.componentMappings.keys.map { it.qualifiedName }}"
+            try {
+                val application = ApplicationLoader().load()
+                logger.info { "Bootstrapping engine." }
+                registerBuiltinTypes(settings)
+                application.init(settings)
+                val executionModel = getExecutionModel(settings, coroutineContext)
+
+                if (settings.isDevelopmentMode()) {
+                    StatsHandler.setEnabled(true)
+                    logger.info { "Development mode is true." }
+                    logger.info { "Stats tracking enabled." }
+                    logger.info {
+                        "Registered components: ${executionModel.componentMappings.keys.map { it.qualifiedName }}"
+                    }
+
+                    logger.info {
+                        "Registered systems: ${executionModel.systems.keys.map { it.id.qualifiedName }}"
+                    }
                 }
 
-                logger.info {
-                    "Registered systems: ${executionModel.systems.keys.map { it.id.qualifiedName }}"
-                }
+                val serviceManager = ServiceManager()
+                engine = createEngine(executionModel, serviceManager)
+
+                logger.info { "Setting up window." }
+                window = WindowFactory.create(settings.windowConfig, engine)
+
+                logger.info { "Registering systems." }
+                registerBuiltinServices(serviceManager, window)
+                settings.getServices().forEach { serviceManager.registerService(it) }
+
+                logger.info { "Initializing peer." }
+                Faux.peer = engine
+                window.init()
+                logger.info { "Done!" }
+                loop()
+                logger.info { "Cleaning up." }
+                window.dispose()
+            } catch (e: Throwable) {
+                logger.error(e) { "An error has occurred." }
             }
-
-            val serviceManager = ServiceManager()
-            engine = createEngine(executionModel, serviceManager)
-
-            logger.info { "Setting up window." }
-            window = WindowFactory.create(settings.windowConfig, engine)
-
-            logger.info { "Registering systems." }
-            registerBuiltinServices(serviceManager, window)
-            settings.getServices().forEach { serviceManager.registerService(it) }
-
-            logger.info { "Initializing peer." }
-            Faux.peer = engine
-            window.init()
-            logger.info { "Done!" }
-            loop()
-            logger.info { "Cleaning up." }
-            window.dispose()
-        } catch (e: Throwable) {
-            logger.error(e) { "An error has occurred." }
         }
+
     }
 
-    protected open fun getExecutionModel(settings: EngineSettings): EngineExecutionModel {
-        return EngineExecutionModel.from(settings)
+    protected open fun getExecutionModel(settings: EngineSettings, mainThread: CoroutineContext): EngineExecutionModel {
+        return EngineExecutionModel.from(settings, mainThread)
     }
 
     private fun registerBuiltinTypes(settings: EngineSettings) {
@@ -105,7 +111,7 @@ open class Launcher {
         )
     }
 
-    private fun loop() {
+    private suspend fun loop() {
         var lastUpdate = clock.getTime()
         while (!window.shouldClose()) {
             StatsHandler.frameTime {

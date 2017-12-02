@@ -11,6 +11,7 @@ class FauxException(message: String? = null, throwable: Throwable? = null): Thro
 interface EnginePeer {
     fun <T: Service> getService(service: KClass<T>): T
     fun getSharedPool(): CoroutineContext
+    fun getMainThread(): CoroutineContext
 }
 
 object Faux {
@@ -18,5 +19,9 @@ object Faux {
 
     val sharedPool: CoroutineContext
         get() = peer.getSharedPool()
+
+    val mainThread: CoroutineContext
+        get() = peer.getMainThread()
+
     inline fun <reified T: Service> getService(): T = peer.getService(T::class)
 }

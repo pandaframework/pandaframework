@@ -23,9 +23,14 @@ object StatsHandler: MetricRegistry() {
         }
     }
 
-    fun frameTime(frame: () -> Unit) {
+    suspend fun frameTime(frame: suspend () -> Unit) {
         if (enabled) {
-            frameTimer.time { frame() }
+            val context = frameTimer.time()
+            try {
+                frame()
+            } finally {
+                context.stop()
+            }
         } else {
             frame()
         }
