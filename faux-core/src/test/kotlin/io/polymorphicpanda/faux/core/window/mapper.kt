@@ -1,36 +1,31 @@
 package io.polymorphicpanda.faux.core.window
 
+import com.natpryce.hamkrest.assertion.assertThat
+import com.natpryce.hamkrest.equalTo
 import io.polymorphicpanda.faux.core.util.PlatformTypeMapper
-import io.polymorphicpanda.faux.event.Event
-import io.polymorphicpanda.faux.event.MouseButtonEvent
-import io.polymorphicpanda.faux.event.MouseMoveEvent
 import io.polymorphicpanda.faux.input.InputAction
 import io.polymorphicpanda.faux.input.MouseButton
-import mu.KotlinLogging
+import org.jetbrains.spek.api.Spek
+import org.jetbrains.spek.api.dsl.describe
+import org.jetbrains.spek.api.dsl.it
 import org.lwjgl.glfw.GLFW
 
+abstract class BaseMapperSpec<T, K>(val mapper: PlatformTypeMapper<T, K>, val expectedMappings: Map<T, K>): Spek({
+    describe("mappings") {
+        expectedMappings.forEach { key, value ->
+            it("$key should map to $value") {
+                assertThat(mapper.fromPlatformType(key), equalTo(value))
+            }
 
-class GlfwEventMapper(private val processor: (Event) -> Unit) {
-    private val logger = KotlinLogging.logger {}
-
-    fun mouseMove(x: Double, y: Double) {
-        processor(MouseMoveEvent(x, y))
-    }
-
-    fun mouseButton(x: Double, y: Double, button: Int, action: Int, mods: Int) {
-        val platformButton = GlfwMouseButtonMapper.fromPlatformType(button)
-        val platformAction = GlfwInputActionMapper.fromPlatformType(action)
-        if (platformButton != null && platformAction != null) {
-            processor(MouseButtonEvent(x, y, platformButton, platformAction))
-        } else {
-            logger.warn {
-                "Unsupported mouse action: (button=$button, action=$action, mods=$mods)"
+            it("$value should map to $key") {
+                assertThat(mapper.toPlatformType(value), equalTo(key))
             }
         }
     }
-}
+})
 
-object GlfwMouseButtonMapper: PlatformTypeMapper<Int, MouseButton>(
+object GlfwMouseButtonMapperSpec: BaseMapperSpec<Int, MouseButton>(
+    GlfwMouseButtonMapper,
     mapOf(
         GLFW.GLFW_MOUSE_BUTTON_LEFT to MouseButton.LEFT,
         GLFW.GLFW_MOUSE_BUTTON_RIGHT to MouseButton.RIGHT,
@@ -46,7 +41,8 @@ object GlfwMouseButtonMapper: PlatformTypeMapper<Int, MouseButton>(
     )
 )
 
-object GlfwInputActionMapper: PlatformTypeMapper<Int, InputAction>(
+object GlfwInputActionMapperSpec: BaseMapperSpec<Int, InputAction>(
+    GlfwInputActionMapper,
     mapOf(
         GLFW.GLFW_PRESS to InputAction.PRESS,
         GLFW.GLFW_RELEASE to InputAction.RELEASE

@@ -125,6 +125,6 @@ class GlfwWindow(private var width: Int,
     }
 
     override fun isMouseButtonPressed(button: MouseButton): Boolean {
-        return GLFW.glfwGetMouseButton(window, fromMouseButton(button)) == GLFW.GLFW_PRESS
+        return GLFW.glfwGetMouseButton(window, GlfwMouseButtonMapper.toPlatformType(button)) == GLFW.GLFW_PRESS
     }
 }
