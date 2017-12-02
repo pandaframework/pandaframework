@@ -1,5 +1,6 @@
 package io.polymorphicpanda.faux.core.window
 
+import io.polymorphicpanda.faux.core.text.CharEvent
 import io.polymorphicpanda.faux.core.util.PlatformTypeMapper
 import io.polymorphicpanda.faux.event.Event
 import io.polymorphicpanda.faux.event.KeyEvent
@@ -45,6 +46,10 @@ class GlfwEventMapper(private val processor: (Event) -> Unit) {
                 "Unsupported key event: key=$key, action=$action, mods=$modifiers)"
             }
         }
+    }
+
+    fun charTyped(unicode: Int) {
+        processor(CharEvent(unicode.toChar()))
     }
 }
 

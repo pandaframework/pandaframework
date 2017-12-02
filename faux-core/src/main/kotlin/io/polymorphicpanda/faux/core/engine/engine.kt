@@ -1,6 +1,7 @@
 package io.polymorphicpanda.faux.core.engine
 
 import io.polymorphicpanda.faux.core.service.ServiceManager
+import io.polymorphicpanda.faux.core.text.CharEvent
 import io.polymorphicpanda.faux.core.util.DynamicGraph
 import io.polymorphicpanda.faux.core.window.WindowEventHandler
 import io.polymorphicpanda.faux.event.Event

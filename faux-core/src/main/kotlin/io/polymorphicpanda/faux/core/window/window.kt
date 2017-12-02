@@ -9,6 +9,7 @@ import io.polymorphicpanda.faux.input.Key
 import io.polymorphicpanda.faux.input.MouseButton
 import io.polymorphicpanda.faux.runtime.FauxException
 import org.lwjgl.glfw.GLFW
+import org.lwjgl.glfw.GLFWCharCallback
 import org.lwjgl.glfw.GLFWCursorPosCallback
 import org.lwjgl.glfw.GLFWErrorCallback
 import org.lwjgl.glfw.GLFWFramebufferSizeCallback
@@ -51,6 +52,7 @@ class GlfwWindow(private var width: Int,
     private lateinit var cursorPosCallback: GLFWCursorPosCallback
     private lateinit var mouseButtonCallBack: GLFWMouseButtonCallback
     private lateinit var keyCallback: GLFWKeyCallback
+    private lateinit var charCallback: GLFWCharCallback
     private val errorCallback = GLFWErrorCallback.createPrint(System.err)
 
     override fun handle(): Long {
@@ -93,11 +95,16 @@ class GlfwWindow(private var width: Int,
             eventMapper.keyPress(key, action, mods)
         }
 
+        charCallback = GLFWCharCallback.create { _, unicode ->
+            eventMapper.charTyped(unicode)
+        }
+
         GLFW.glfwSetWindowRefreshCallback(window, refreshCallback)
         GLFW.glfwSetFramebufferSizeCallback(window, frameBufferResizeCallback)
         GLFW.glfwSetCursorPosCallback(window, cursorPosCallback)
         GLFW.glfwSetMouseButtonCallback(window, mouseButtonCallBack)
         GLFW.glfwSetKeyCallback(window, keyCallback)
+        GLFW.glfwSetCharCallback(window, charCallback)
         GLFW.glfwMakeContextCurrent(window)
 
         GL.createCapabilities(true)
@@ -111,6 +118,7 @@ class GlfwWindow(private var width: Int,
         cursorPosCallback.free()
         mouseButtonCallBack.free()
         keyCallback.free()
+        charCallback.free()
         GLFW.glfwTerminate()
     }
 
