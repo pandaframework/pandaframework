@@ -5,12 +5,14 @@ import io.polymorphicpanda.faux.core.engine.Engine
 import io.polymorphicpanda.faux.core.util.NULL
 import io.polymorphicpanda.faux.event.Event
 import io.polymorphicpanda.faux.input.InputManager
+import io.polymorphicpanda.faux.input.Key
 import io.polymorphicpanda.faux.input.MouseButton
 import io.polymorphicpanda.faux.runtime.FauxException
 import org.lwjgl.glfw.GLFW
 import org.lwjgl.glfw.GLFWCursorPosCallback
 import org.lwjgl.glfw.GLFWErrorCallback
 import org.lwjgl.glfw.GLFWFramebufferSizeCallback
+import org.lwjgl.glfw.GLFWKeyCallback
 import org.lwjgl.glfw.GLFWMouseButtonCallback
 import org.lwjgl.glfw.GLFWWindowRefreshCallback
 import org.lwjgl.glfw.GLFWWindowSizeCallback
@@ -48,6 +50,7 @@ class GlfwWindow(private var width: Int,
     private lateinit var resizeCallback: GLFWWindowSizeCallback
     private lateinit var cursorPosCallback: GLFWCursorPosCallback
     private lateinit var mouseButtonCallBack: GLFWMouseButtonCallback
+    private lateinit var keyCallback: GLFWKeyCallback
     private val errorCallback = GLFWErrorCallback.createPrint(System.err)
 
     override fun handle(): Long {
@@ -86,10 +89,15 @@ class GlfwWindow(private var width: Int,
             eventMapper.mouseButton(x[0], y[0], button, action, mods)
         }
 
+        keyCallback = GLFWKeyCallback.create { _, key, _, action, mods ->
+            eventMapper.keyPress(key, action, mods)
+        }
+
         GLFW.glfwSetWindowRefreshCallback(window, refreshCallback)
         GLFW.glfwSetFramebufferSizeCallback(window, frameBufferResizeCallback)
         GLFW.glfwSetCursorPosCallback(window, cursorPosCallback)
         GLFW.glfwSetMouseButtonCallback(window, mouseButtonCallBack)
+        GLFW.glfwSetKeyCallback(window, keyCallback)
         GLFW.glfwMakeContextCurrent(window)
 
         GL.createCapabilities(true)
@@ -102,6 +110,7 @@ class GlfwWindow(private var width: Int,
         resizeCallback.free()
         cursorPosCallback.free()
         mouseButtonCallBack.free()
+        keyCallback.free()
         GLFW.glfwTerminate()
     }
 
@@ -126,5 +135,9 @@ class GlfwWindow(private var width: Int,
 
     override fun isMouseButtonPressed(button: MouseButton): Boolean {
         return GLFW.glfwGetMouseButton(window, GlfwMouseButtonMapper.toPlatformType(button)) == GLFW.GLFW_PRESS
+    }
+
+    override fun isKeyPressed(key: Key): Boolean {
+        return GLFW.glfwGetKey(window, GlfwKeyMapper.toPlatformType(key)) == GLFW.GLFW_PRESS
     }
 }

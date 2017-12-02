@@ -16,4 +16,11 @@ interface InputManager: Service {
      * @note Should only be called in the main thread.
      */
     fun isMouseButtonPressed(button: MouseButton): Boolean
+
+    /**
+     * Check whether the specified key is pressed or not.
+     *
+     * @note Should only be called in the main thread.
+     */
+    fun isKeyPressed(key: Key): Boolean
 }

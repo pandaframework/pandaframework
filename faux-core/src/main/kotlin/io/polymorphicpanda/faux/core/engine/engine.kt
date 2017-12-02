@@ -4,6 +4,7 @@ import io.polymorphicpanda.faux.core.service.ServiceManager
 import io.polymorphicpanda.faux.core.util.DynamicGraph
 import io.polymorphicpanda.faux.core.window.WindowEventHandler
 import io.polymorphicpanda.faux.event.Event
+import io.polymorphicpanda.faux.event.KeyEvent
 import io.polymorphicpanda.faux.runtime.EnginePeer
 import io.polymorphicpanda.faux.service.Service
 import io.polymorphicpanda.faux.system.System
